@@ -378,13 +378,14 @@ def test_ai_config(request):
             if provider.name == 'gemini':
                 # اختبار Gemini
                 try:
-                    import google.generativeai as genai
-                    genai.configure(api_key=api_key)
-                    model = genai.GenerativeModel(model_name)
+                    import google.genai as genai
+                    from google.genai import types
+                    client = genai.Client(api_key=api_key)
 
-                    response = model.generate_content(
-                        test_message,
-                        generation_config=genai.types.GenerationConfig(
+                    response = client.models.generate_content(
+                        model=model_name,
+                        contents=test_message,
+                        config=types.GenerateContentConfig(
                             max_output_tokens=int(max_tokens),
                             temperature=float(temperature),
                         )
@@ -399,7 +400,7 @@ def test_ai_config(request):
                 except ImportError:
                     return JsonResponse({
                         'success': False,
-                        'error': 'مكتبة Google Generative AI غير مثبتة. قم بتثبيتها باستخدام: pip install google-generativeai'
+                        'error': 'مكتبة Google Gen AI غير مثبتة. قم بتثبيتها باستخدام: pip install google-genai'
                     })
                 except Exception as e:
                     return JsonResponse({
