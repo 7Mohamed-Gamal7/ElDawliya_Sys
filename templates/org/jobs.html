@@ -3,60 +3,13 @@
 
 {% block title %}الوظائف - نظام الدولية{% endblock %}
 
-{% block extra_css %}
-<style>
-.jobs-header {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: white;
-    border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2);
-}
-
-.job-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    border: 1px solid #e5e7eb;
-}
-
-.job-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.job-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-}
-
-.salary-badge {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 500;
-}
-</style>
-{% endblock %}
+{% block extra_css %}{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-12">
         <!-- Jobs Header -->
-        <div class="jobs-header">
+        <div class="page-header">
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h1 class="h2 mb-2">
@@ -95,8 +48,8 @@
 <div class="row">
     {% for job in jobs %}
     <div class="col-xl-4 col-md-6">
-        <div class="job-card">
-            <div class="job-icon">
+        <div class="card p-3">
+            <div class="stats-icon">
                 <i class="fas fa-briefcase"></i>
             </div>
             <h5 class="mb-2">{{ job.job_title }}</h5>
@@ -107,7 +60,7 @@
             
             <div class="mb-3">
                 {% if job.basic_salary %}
-                <div class="salary-badge">
+                <div class="badge bg-success fs-6">
                     <i class="fas fa-money-bill-wave me-1"></i>
                     {{ job.basic_salary|floatformat:0 }} ريال
                 </div>

@@ -58,7 +58,7 @@ INTERNAL_IPS = [
 # Enable SQL logging in development
 LOGGING['loggers']['django.db.backends'] = {
     'handlers': ['console'],
-    'level': 'DEBUG',
+    'level': 'WARNING',
     'propagate': False,
 }
 

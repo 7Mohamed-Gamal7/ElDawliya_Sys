@@ -21,8 +21,8 @@
                 <div class="row g-4">
                     <!-- Basic Information Section -->
                     <div class="col-12 mb-4">
-                        <div class="form-section">
-                            <h6 class="section-title">
+                        <div class="border-start border-4 border-primary bg-light rounded p-3 mb-3">
+                            <h6 class="fw-bold text-primary d-flex align-items-center mb-3 pb-2 border-bottom">
                                 <i class="fas fa-info-circle"></i>
                                 البيانات الأساسية
                             </h6>
@@ -30,7 +30,7 @@
                             <div class="row g-3">
                                 <!-- Product ID -->
                                 <div class="col-md-6">
-                                    <label for="product_id" class="form-label required-label">رقم الصنف</label>
+                                    <label for="product_id" class="form-label">رقم الصنف <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="product_id" name="product_id"
                                            value="{{ form.product_id.value|default:'' }}" required>
                                     <small class="text-muted">رمز فريد لتعريف المنتج</small>
@@ -38,7 +38,7 @@
 
                                 <!-- Product Name -->
                                 <div class="col-md-6">
-                                    <label for="name" class="form-label required-label">اسم الصنف</label>
+                                    <label for="name" class="form-label">اسم الصنف <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="name" name="name"
                                            value="{{ form.name.value|default:'' }}" required>
                                 </div>
@@ -80,8 +80,8 @@
 
                     <!-- Inventory Details Section -->
                     <div class="col-12 mb-4">
-                        <div class="form-section">
-                            <h6 class="section-title">
+                        <div class="border-start border-4 border-primary bg-light rounded p-3 mb-3">
+                            <h6 class="fw-bold text-primary d-flex align-items-center mb-3 pb-2 border-bottom">
                                 <i class="fas fa-boxes"></i>
                                 المخزون والأسعار
                             </h6>
@@ -130,8 +130,8 @@
 
                     <!-- Thresholds Section -->
                     <div class="col-12 mb-4">
-                        <div class="form-section">
-                            <h6 class="section-title">
+                        <div class="border-start border-4 border-primary bg-light rounded p-3 mb-3">
+                            <h6 class="fw-bold text-primary d-flex align-items-center mb-3 pb-2 border-bottom">
                                 <i class="fas fa-chart-line"></i>
                                 حدود المخزون
                             </h6>
@@ -168,8 +168,8 @@
 
                     <!-- Image Section -->
                     <div class="col-12 mb-4">
-                        <div class="form-section">
-                            <h6 class="section-title">
+                        <div class="border-start border-4 border-primary bg-light rounded p-3 mb-3">
+                            <h6 class="fw-bold text-primary d-flex align-items-center mb-3 pb-2 border-bottom">
                                 <i class="fas fa-image"></i>
                                 صورة الصنف
                             </h6>
@@ -214,87 +214,7 @@
     </div>
 </div>
 
-<style>
-    .form-card {
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        overflow: hidden;
-    }
 
-    .form-section {
-        background-color: #f8f9fa;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        border-right: 4px solid #3f51b5;
-        transition: transform 0.3s ease;
-    }
-
-    .form-section:hover {
-        transform: translateY(-3px);
-    }
-
-    .section-title {
-        font-weight: 600;
-        color: #3f51b5;
-        display: flex;
-        align-items: center;
-        margin-bottom: 1.2rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-    }
-
-    .section-title i {
-        margin-left: 10px;
-        width: 24px;
-        height: 24px;
-        line-height: 24px;
-        text-align: center;
-        background-color: #3f51b5;
-        color: white;
-        border-radius: 50%;
-        font-size: 0.8rem;
-    }
-
-    .form-control, .form-select {
-        border: 1.5px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 0.75rem 1rem;
-        transition: all 0.3s;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: #3f51b5;
-        box-shadow: 0 0 0 0.25rem rgba(63,81,181,0.25);
-    }
-
-    .required-label::after {
-        content: '*';
-        color: #f44336;
-        margin-right: 4px;
-    }
-
-    .text-muted {
-        font-size: 0.85rem;
-    }
-
-    .btn {
-        transition: all 0.3s ease;
-        border-radius: 8px;
-    }
-
-    .btn-primary {
-        background-color: #3f51b5;
-        border-color: #3f51b5;
-    }
-
-    .btn-primary:hover {
-        background-color: #303f9f;
-        border-color: #303f9f;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-</style>
 
 <!-- Category Modal -->
 <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true" dir="rtl">

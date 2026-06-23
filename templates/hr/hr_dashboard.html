@@ -3,209 +3,12 @@
 
 {% block title %}لوحة تحكم الموارد البشرية - نظام الدولية{% endblock %}
 
-{% block extra_css %}
-<style>
-:root {
-    --hr-primary: #2563eb;
-    --hr-secondary: #1e40af;
-    --hr-success: #10b981;
-    --hr-warning: #f59e0b;
-    --hr-danger: #ef4444;
-    --hr-info: #06b6d4;
-}
-
-/* Ensure content is visible even without external CSS */
-.hr-dashboard-header {
-    background: linear-gradient(135deg, var(--hr-primary) 0%, var(--hr-secondary) 100%);
-    color: white;
-    border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
-}
-
-.hr-stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    border: 1px solid #e5e7eb;
-}
-
-.hr-stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.hr-stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 1rem;
-}
-
-.hr-stat-value {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.hr-stat-label {
-    color: #6b7280;
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-}
-
-.hr-stat-change {
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-.hr-module-card {
-    background: white;
-    border-radius: 15px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    text-decoration: none;
-    color: inherit;
-    border: 1px solid #e5e7eb;
-    display: block;
-}
-
-.hr-module-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    text-decoration: none;
-    color: inherit;
-}
-
-.hr-module-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    margin-bottom: 1rem;
-}
-
-.quick-actions {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
-}
-
-.quick-action-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    border-radius: 10px;
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    margin-bottom: 0.5rem;
-}
-
-.quick-action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    color: white;
-    text-decoration: none;
-}
-
-.recent-activity {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
-}
-
-.activity-item {
-    display: flex;
-    align-items: center;
-    padding: 1rem 0;
-    border-bottom: 1px solid #f3f4f6;
-}
-
-.activity-item:last-child {
-    border-bottom: none;
-}
-
-.activity-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 1rem;
-    font-size: 16px;
-}
-
-.activity-content {
-    flex: 1;
-}
-
-.activity-title {
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-}
-
-.activity-time {
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-/* Loading and error states */
-.loading-indicator {
-    text-align: center;
-    padding: 3rem;
-    color: #6b7280;
-}
-
-.error-message {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    padding: 1rem;
-    color: #dc2626;
-    margin: 1rem 0;
-    text-align: center;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .hr-dashboard-header {
-        padding: 1rem;
-        text-align: center;
-    }
-    
-    .hr-stat-card, .hr-module-card {
-        margin-bottom: 1rem;
-    }
-}
-</style>
-{% endblock %}
+{% block extra_css %}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
     <!-- HR Dashboard Header -->
-    <div class="hr-dashboard-header">
+    <div class="page-header">
         <div class="row align-items-center">
             <div class="col-lg-8 col-md-7">
                 <h1 class="h2 mb-2">
@@ -237,13 +40,13 @@
     <!-- Key Statistics -->
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-lg-6 col-md-6">
-            <div class="hr-stat-card">
-                <div class="hr-stat-icon" style="background: linear-gradient(135deg, var(--hr-success), #059669);">
+            <div class="stats-card">
+                <div class="stats-icon" style="background: linear-gradient(135deg, var(--hr-success), #059669);">
                     <i class="fas fa-users text-white"></i>
                 </div>
-                <div class="hr-stat-value text-success" id="total-employees">{{ total_employees|default:0 }}</div>
-                <div class="hr-stat-label">إجمالي الموظفين</div>
-                <div class="hr-stat-change text-success">
+                <div class="h3 fw-bold text-success" id="total-employees">{{ total_employees|default:0 }}</div>
+                <div class="text-muted small">إجمالي الموظفين</div>
+                <div class="small text-success">
                     <i class="fas fa-arrow-up me-1"></i>
                     +{{ new_employees_this_month|default:0 }} هذا الشهر
                 </div>
@@ -251,13 +54,13 @@
         </div>
 
         <div class="col-xl-3 col-lg-6 col-md-6">
-            <div class="hr-stat-card">
-                <div class="hr-stat-icon" style="background: linear-gradient(135deg, var(--hr-primary), var(--hr-secondary));">
+            <div class="stats-card">
+                <div class="stats-icon" style="background: linear-gradient(135deg, var(--hr-primary), var(--hr-secondary));">
                     <i class="fas fa-user-check text-white"></i>
                 </div>
-                <div class="hr-stat-value text-primary" id="present-today">{{ present_today|default:0 }}</div>
-                <div class="hr-stat-label">حاضر اليوم</div>
-                <div class="hr-stat-change text-success">
+                <div class="h3 fw-bold text-primary" id="present-today">{{ present_today|default:0 }}</div>
+                <div class="text-muted small">حاضر اليوم</div>
+                <div class="small text-success">
                     <i class="fas fa-percentage me-1"></i>
                     {{ attendance_rate|default:0|floatformat:1 }}% معدل الحضور
                 </div>
@@ -265,13 +68,13 @@
         </div>
 
         <div class="col-xl-3 col-lg-6 col-md-6">
-            <div class="hr-stat-card">
-                <div class="hr-stat-icon" style="background: linear-gradient(135deg, var(--hr-warning), #d97706);">
+            <div class="stats-card">
+                <div class="stats-icon" style="background: linear-gradient(135deg, var(--hr-warning), #d97706);">
                     <i class="fas fa-calendar-times text-white"></i>
                 </div>
-                <div class="hr-stat-value text-warning" id="pending-leaves">{{ pending_leaves|default:0 }}</div>
-                <div class="hr-stat-label">إجازات في الانتظار</div>
-                <div class="hr-stat-change text-info">
+                <div class="h3 fw-bold text-warning" id="pending-leaves">{{ pending_leaves|default:0 }}</div>
+                <div class="text-muted small">إجازات في الانتظار</div>
+                <div class="small text-info">
                     <i class="fas fa-clock me-1"></i>
                     {{ approved_leaves|default:0 }} معتمدة
                 </div>
@@ -279,13 +82,13 @@
         </div>
         
         <div class="col-xl-3 col-md-6">
-            <div class="hr-stat-card">
-                <div class="hr-stat-icon" style="background: linear-gradient(135deg, var(--hr-info), #0891b2);">
+            <div class="stats-card">
+                <div class="stats-icon" style="background: linear-gradient(135deg, var(--hr-info), #0891b2);">
                     <i class="fas fa-money-bill-wave text-white"></i>
                 </div>
-                <div class="hr-stat-value text-info">{{ total_payroll|default:0|floatformat:0 }}</div>
-                <div class="hr-stat-label">إجمالي الرواتب (جنيه مصري)</div>
-                <div class="hr-stat-change text-success">
+                <div class="h3 fw-bold text-info">{{ total_payroll|default:0|floatformat:0 }}</div>
+                <div class="text-muted small">إجمالي الرواتب (جنيه مصري)</div>
+                <div class="small text-success">
                     <i class="fas fa-chart-line me-1"></i>
                     هذا الشهر
                 </div>
@@ -306,8 +109,8 @@
     <div class="row">
         <!-- Attendance Module -->
         <div class="col-xl-4 col-md-6">
-            <a href="{% url 'hr:attendance:dashboard' %}" class="hr-module-card">
-                <div class="hr-module-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+            <a href="{% url 'hr:attendance:dashboard' %}" class="card p-3 text-decoration-none d-block">
+                <div class="stats-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
                     <i class="fas fa-clock text-white"></i>
                 </div>
                 <h5 class="mb-2">الحضور والانصراف</h5>
@@ -327,8 +130,8 @@
 
         <!-- Leaves Module -->
         <div class="col-xl-4 col-md-6">
-            <a href="{% url 'hr:leaves:dashboard' %}" class="hr-module-card">
-                <div class="hr-module-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <a href="{% url 'hr:leaves:dashboard' %}" class="card p-3 text-decoration-none d-block">
+                <div class="stats-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
                     <i class="fas fa-calendar-alt text-white"></i>
                 </div>
                 <h5 class="mb-2">إدارة الإجازات</h5>
@@ -348,8 +151,8 @@
 
         <!-- Payroll Module -->
         <div class="col-xl-4 col-md-6">
-            <a href="{% url 'payrolls:dashboard' %}" class="hr-module-card">
-                <div class="hr-module-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <a href="{% url 'payrolls:dashboard' %}" class="card p-3 text-decoration-none d-block">
+                <div class="stats-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
                     <i class="fas fa-coins text-white"></i>
                 </div>
                 <h5 class="mb-2">إدارة الرواتب</h5>
@@ -369,8 +172,8 @@
 
         <!-- Employees Module -->
         <div class="col-xl-4 col-md-6">
-            <a href="{% url 'employees:list' %}" class="hr-module-card">
-                <div class="hr-module-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <a href="{% url 'employees:list' %}" class="card p-3 text-decoration-none d-block">
+                <div class="stats-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
                     <i class="fas fa-users text-white"></i>
                 </div>
                 <h5 class="mb-2">إدارة الموظفين</h5>
@@ -390,8 +193,8 @@
 
         <!-- Reports Module -->
         <div class="col-xl-4 col-md-6">
-            <a href="{% url 'hr:attendance:reports' %}" class="hr-module-card">
-                <div class="hr-module-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+            <a href="{% url 'hr:attendance:reports' %}" class="card p-3 text-decoration-none d-block">
+                <div class="stats-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
                     <i class="fas fa-chart-bar text-white"></i>
                 </div>
                 <h5 class="mb-2">التقارير والتحليلات</h5>
@@ -411,8 +214,8 @@
 
         <!-- Training Module -->
         <div class="col-xl-4 col-md-6">
-            <a href="{% url 'hr:training:dashboard' %}" class="hr-module-card">
-                <div class="hr-module-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+            <a href="{% url 'hr:training:dashboard' %}" class="card p-3 text-decoration-none d-block">
+                <div class="stats-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
                     <i class="fas fa-graduation-cap text-white"></i>
                 </div>
                 <h5 class="mb-2">التدريب والتطوير</h5>
@@ -434,58 +237,58 @@
     <!-- Quick Actions and Recent Activity -->
     <div class="row mt-4">
         <div class="col-xl-6">
-            <div class="quick-actions">
+            <div class="card p-3">
                 <h5 class="mb-3">
                     <i class="fas fa-bolt me-2"></i>
                     إجراءات سريعة
                 </h5>
 
-                <a href="{% url 'employees:add' %}" class="quick-action-btn" style="background: linear-gradient(135deg, var(--hr-success), #059669);">
+                <a href="{% url 'employees:add' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, var(--hr-success), #059669);">
                     <i class="fas fa-user-plus me-2"></i>
                     إضافة موظف جديد
                 </a>
 
-                <a href="{% url 'hr:attendance:mark' %}" class="quick-action-btn" style="background: linear-gradient(135deg, var(--hr-primary), var(--hr-secondary));">
+                <a href="{% url 'hr:attendance:mark' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, var(--hr-primary), var(--hr-secondary));">
                     <i class="fas fa-clock me-2"></i>
                     تسجيل حضور
                 </a>
 
-                <a href="{% url 'hr:leaves:dashboard' %}" class="quick-action-btn" style="background: linear-gradient(135deg, var(--hr-warning), #d97706);">
+                <a href="{% url 'hr:leaves:dashboard' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, var(--hr-warning), #d97706);">
                     <i class="fas fa-calendar-plus me-2"></i>
                     إدارة الإجازات
                 </a>
 
-                <a href="{% url 'payrolls:dashboard' %}" class="quick-action-btn" style="background: linear-gradient(135deg, var(--hr-info), #0891b2);">
+                <a href="{% url 'payrolls:dashboard' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, var(--hr-info), #0891b2);">
                     <i class="fas fa-money-bill me-2"></i>
                     إدارة الرواتب
                 </a>
 
-                <a href="{% url 'employees:health_insurance_providers_list' %}" class="quick-action-btn" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <a href="{% url 'employees:health_insurance_providers_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #10b981, #059669);">
                     <i class="fas fa-heartbeat me-2"></i>
                     إدارة التأمين الصحي
                 </a>
 
-                <a href="{% url 'employees:social_insurance_job_titles_list' %}" class="quick-action-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <a href="{% url 'employees:social_insurance_job_titles_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
                     <i class="fas fa-shield-alt me-2"></i>
                     التأمينات الاجتماعية
                 </a>
 
-                <a href="{% url 'employees:salary_components_list' %}" class="quick-action-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <a href="{% url 'employees:salary_components_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
                     <i class="fas fa-coins me-2"></i>
                     مكونات الراتب
                 </a>
 
-                <a href="{% url 'employees:vehicles_list' %}" class="quick-action-btn" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                <a href="{% url 'employees:vehicles_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
                     <i class="fas fa-bus me-2"></i>
                     إدارة المركبات
                 </a>
 
-                <a href="{% url 'employees:work_schedules_list' %}" class="quick-action-btn" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <a href="{% url 'employees:work_schedules_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
                     <i class="fas fa-clock me-2"></i>
                     جداول العمل
                 </a>
 
-                <a href="{% url 'employees:evaluation_criteria_list' %}" class="quick-action-btn" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
+                <a href="{% url 'employees:evaluation_criteria_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
                     <i class="fas fa-chart-line me-2"></i>
                     معايير التقييم
                 </a>
@@ -493,20 +296,20 @@
         </div>
 
         <div class="col-xl-6">
-            <div class="recent-activity">
+            <div class="card p-3">
                 <h5 class="mb-3">
                     <i class="fas fa-history me-2"></i>
                     النشاطات الأخيرة
                 </h5>
 
                 {% for activity in recent_activities %}
-                <div class="activity-item">
-                    <div class="activity-icon" style="background: {{ activity.color }};">
+                <div class="d-flex align-items-center py-3 border-bottom">
+                    <div class="activity-icon rounded d-flex align-items-center justify-content-center" style="background: {{ activity.color }};">
                         <i class="{{ activity.icon }} text-white"></i>
                     </div>
                     <div class="activity-content">
-                        <div class="activity-title">{{ activity.title }}</div>
-                        <div class="activity-time">{{ activity.time|timesince }} مضت</div>
+                        <div class="fw-medium mb-1">{{ activity.title }}</div>
+                        <div class="small text-muted">{{ activity.time|timesince }} مضت</div>
                     </div>
                 </div>
                 {% empty %}
@@ -528,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('HR Dashboard loaded successfully');
 
     // Add loading states to buttons
-    const buttons = document.querySelectorAll('.quick-action-btn, .hr-module-card');
+    const buttons = document.querySelectorAll('.btn.w-100, .card.p-3.text-decoration-none');
     buttons.forEach(button => {
         button.addEventListener('click', function() {
             const icon = this.querySelector('i');

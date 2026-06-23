@@ -3,135 +3,13 @@
 
 {% block title %}إدارة الرواتب - نظام الدولية{% endblock %}
 
-{% block extra_css %}
-<style>
-.payrolls-dashboard-header {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-    color: white;
-    border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
-}
-
-.payrolls-stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    border: 1px solid #e5e7eb;
-}
-
-.payrolls-stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.payrolls-stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 1rem;
-}
-
-.payrolls-stat-value {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.payrolls-stat-label {
-    color: #6b7280;
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-}
-
-.payroll-run-card {
-    background: white;
-    border-radius: 10px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
-}
-
-.payroll-status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.status-draft {
-    background: #f3f4f6;
-    color: #374151;
-}
-
-.status-processing {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.status-completed {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.status-paid {
-    background: #dbeafe;
-    color: #1e40af;
-}
-
-.payroll-action-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    border-radius: 10px;
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    margin-bottom: 0.5rem;
-}
-
-.payroll-action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    color: white;
-    text-decoration: none;
-}
-
-.salary-summary-item {
-    display: flex;
-    justify-content: between;
-    align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f3f4f6;
-}
-
-.salary-summary-item:last-child {
-    border-bottom: none;
-}
-
-.currency {
-    font-weight: 600;
-    color: #059669;
-}
-</style>
-{% endblock %}
+{% block extra_css %}{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-12">
         <!-- Payrolls Dashboard Header -->
-        <div class="payrolls-dashboard-header">
+        <div class="page-header">
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h1 class="h2 mb-2">
@@ -156,42 +34,42 @@
 <!-- Key Statistics -->
 <div class="row">
     <div class="col-xl-3 col-md-6">
-        <div class="payrolls-stat-card">
-            <div class="payrolls-stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+        <div class="stats-card">
+            <div class="stats-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
                 <i class="fas fa-money-bill-wave text-white"></i>
             </div>
-            <div class="payrolls-stat-value text-success currency">{{ total_payroll|default:0|floatformat:0 }}</div>
-            <div class="payrolls-stat-label">إجمالي الرواتب (جنيه مصري)</div>
+            <div class="h3 fw-bold text-success">{{ total_payroll|default:0|floatformat:0 }}</div>
+            <div class="text-muted small">إجمالي الرواتب (جنيه مصري)</div>
         </div>
     </div>
     
     <div class="col-xl-3 col-md-6">
-        <div class="payrolls-stat-card">
-            <div class="payrolls-stat-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+        <div class="stats-card">
+            <div class="stats-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
                 <i class="fas fa-users text-white"></i>
             </div>
-            <div class="payrolls-stat-value text-primary">{{ employees_paid|default:0 }}</div>
-            <div class="payrolls-stat-label">موظف مدفوع الراتب</div>
+            <div class="h3 fw-bold text-primary">{{ employees_paid|default:0 }}</div>
+            <div class="text-muted small">موظف مدفوع الراتب</div>
         </div>
     </div>
     
     <div class="col-xl-3 col-md-6">
-        <div class="payrolls-stat-card">
-            <div class="payrolls-stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+        <div class="stats-card">
+            <div class="stats-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
                 <i class="fas fa-play text-white"></i>
             </div>
-            <div class="payrolls-stat-value text-warning">{{ active_runs|default:0 }}</div>
-            <div class="payrolls-stat-label">تشغيلات نشطة</div>
+            <div class="h3 fw-bold text-warning">{{ active_runs|default:0 }}</div>
+            <div class="text-muted small">تشغيلات نشطة</div>
         </div>
     </div>
     
     <div class="col-xl-3 col-md-6">
-        <div class="payrolls-stat-card">
-            <div class="payrolls-stat-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+        <div class="stats-card">
+            <div class="stats-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
                 <i class="fas fa-calculator text-white"></i>
             </div>
-            <div class="payrolls-stat-value text-info currency">{{ avg_salary|default:0|floatformat:0 }}</div>
-            <div class="payrolls-stat-label">متوسط الراتب (ريال)</div>
+            <div class="h3 fw-bold text-info">{{ avg_salary|default:0|floatformat:0 }}</div>
+            <div class="text-muted small">متوسط الراتب (ريال)</div>
         </div>
     </div>
 </div>
@@ -207,22 +85,22 @@
                 </h5>
             </div>
             <div class="card-body">
-                <a href="{% url 'payrolls:create_payroll_run' %}" class="payroll-action-btn" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <a href="{% url 'payrolls:create_payroll_run' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #10b981, #059669);">
                     <i class="fas fa-play me-2"></i>
                     تشغيل رواتب جديد
                 </a>
                 
-                <a href="{% url 'payrolls:payroll_runs' %}" class="payroll-action-btn" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                <a href="{% url 'payrolls:payroll_runs' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
                     <i class="fas fa-list me-2"></i>
                     عرض التشغيلات
                 </a>
                 
-                <a href="{% url 'payrolls:salary_list' %}" class="payroll-action-btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <a href="{% url 'payrolls:salary_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
                     <i class="fas fa-money-check me-2"></i>
                     إدارة الرواتب
                 </a>
                 
-                <a href="#" class="payroll-action-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <a href="#" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
                     <i class="fas fa-file-export me-2"></i>
                     تصدير التقارير
                 </a>
@@ -237,33 +115,33 @@
                 </h5>
             </div>
             <div class="card-body">
-                <div class="salary-summary-item">
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
                         <h6 class="mb-0">الراتب الأساسي</h6>
                         <small class="text-muted">متوسط</small>
                     </div>
-                    <div class="currency">{{ avg_basic_salary|default:0|floatformat:0 }}</div>
+                    <div class="fw-bold text-success small">{{ avg_basic_salary|default:0|floatformat:0 }}</div>
                 </div>
-                <div class="salary-summary-item">
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
                         <h6 class="mb-0">البدلات</h6>
                         <small class="text-muted">متوسط</small>
                     </div>
-                    <div class="currency">{{ avg_allowances|default:0|floatformat:0 }}</div>
+                    <div class="fw-bold text-success small">{{ avg_allowances|default:0|floatformat:0 }}</div>
                 </div>
-                <div class="salary-summary-item">
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
                         <h6 class="mb-0">الخصومات</h6>
                         <small class="text-muted">متوسط</small>
                     </div>
                     <div class="text-danger">{{ avg_deductions|default:0|floatformat:0 }}</div>
                 </div>
-                <div class="salary-summary-item">
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
                         <h6 class="mb-0 fw-bold">الصافي</h6>
                         <small class="text-muted">متوسط</small>
                     </div>
-                    <div class="currency fw-bold">{{ avg_net_salary|default:0|floatformat:0 }}</div>
+                    <div class="fw-bold text-success small">{{ avg_net_salary|default:0|floatformat:0 }}</div>
                 </div>
             </div>
         </div>
@@ -279,7 +157,7 @@
             </div>
             <div class="card-body">
                 {% for run in recent_payroll_runs %}
-                <div class="payroll-run-card">
+                <div class="card p-3 mb-3">
                     <div class="row align-items-center">
                         <div class="col-md-3">
                             <h6 class="mb-1">{{ run.run_name }}</h6>
@@ -293,19 +171,19 @@
                         </div>
                         <div class="col-md-3">
                             <div class="text-center">
-                                <div class="fw-bold currency">{{ run.total_net_amount|default:0|floatformat:0 }}</div>
+                                <div class="fw-bold text-success small">{{ run.total_net_amount|default:0|floatformat:0 }}</div>
                                 <small class="text-muted">ريال</small>
                             </div>
                         </div>
                         <div class="col-md-2">
                             {% if run.status == 'draft' %}
-                                <span class="payroll-status-badge status-draft">مسودة</span>
+                                <span class="badge badge-secondary">مسودة</span>
                             {% elif run.status == 'processing' %}
-                                <span class="payroll-status-badge status-processing">قيد المعالجة</span>
+                                <span class="badge badge-warning">قيد المعالجة</span>
                             {% elif run.status == 'completed' %}
-                                <span class="payroll-status-badge status-completed">مكتمل</span>
+                                <span class="badge badge-success">مكتمل</span>
                             {% elif run.status == 'paid' %}
-                                <span class="payroll-status-badge status-paid">مدفوع</span>
+                                <span class="badge badge-info">مدفوع</span>
                             {% endif %}
                         </div>
                         <div class="col-md-2">
@@ -357,7 +235,7 @@
                     </div>
                     <div class="col-4">
                         <div class="mb-2">
-                            <div class="h4 text-success mb-0 currency">{{ month_total|default:0|floatformat:0 }}</div>
+                            <div class="h4 text-success mb-0">{{ month_total|default:0|floatformat:0 }}</div>
                             <small class="text-muted">إجمالي</small>
                         </div>
                     </div>
@@ -410,7 +288,7 @@ setInterval(function() {
 
 // Format currency numbers
 document.addEventListener('DOMContentLoaded', function() {
-    const currencyElements = document.querySelectorAll('.currency');
+    const currencyElements = document.querySelectorAll('.h4.text-success.mb-0, .fw-bold.text-success.small');
     currencyElements.forEach(element => {
         const value = parseFloat(element.textContent.replace(/,/g, ''));
         if (!isNaN(value)) {

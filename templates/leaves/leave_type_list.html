@@ -1,12 +1,92 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>أنواع الإجازات</h1>
-<ul>
-  {% for t in items %}
-  <li>{{ t.leave_name }} {% if t.is_paid %}(مدفوعة){% endif %}</li>
-  {% empty %}
-  <li>لا توجد أنواع إجازات</li>
-  {% endfor %}
-</ul>
+<div class="page-content-wrapper">
+    <div class="page-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <h1><i class="fas fa-calendar-alt me-2"></i>أنواع الإجازات</h1>
+                <p>إدارة وتصنيف أنواع الإجازات في النظام</p>
+            </div>
+            <a href="{% url 'hr:leaves:leave_type_create' %}" class="btn btn-light">
+                <i class="fas fa-plus me-2"></i>إضافة نوع إجازة
+            </a>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-toolbar">
+            <div class="table-search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="form-control" id="tableSearch" placeholder="بحث في أنواع الإجازات...">
+            </div>
+            <div>
+                <span class="table-info">إجمالي أنواع الإجازات: {{ items|length }}</span>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table" id="leaveTypesTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم الإجازة</th>
+                        <th>النوع</th>
+                        <th>عدد الأيام</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in items %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="fw-medium">{{ t.leave_name }}</td>
+                        <td>
+                            {% if t.is_paid %}
+                            <span class="badge badge-success">مدفوعة</span>
+                            {% else %}
+                            <span class="badge badge-secondary">غير مدفوعة</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ t.total_days|default:"--" }}</td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="table-empty">
+                            <i class="fas fa-calendar-alt"></i>
+                            <p>لا توجد أنواع إجازات مضافة بعد</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('tableSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const value = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#leaveTypesTable tbody tr');
+            rows.forEach(function(row) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(value) ? '' : 'none';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

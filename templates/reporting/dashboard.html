@@ -6,139 +6,6 @@
 
 {% block extra_css %}
 <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css" rel="stylesheet">
-<style>
-    .dashboard-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-lg);
-        padding: var(--spacing-lg);
-        margin-bottom: var(--spacing-md);
-        box-shadow: var(--shadow-sm);
-        transition: var(--transition-base);
-    }
-    
-    .dashboard-card:hover {
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-    }
-    
-    .metric-card {
-        text-align: center;
-        padding: var(--spacing-md);
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-        color: white;
-        border-radius: var(--border-radius-md);
-        margin-bottom: var(--spacing-sm);
-    }
-    
-    .metric-value {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: var(--spacing-xs);
-    }
-    
-    .metric-label {
-        font-size: 0.9rem;
-        opacity: 0.9;
-    }
-    
-    .chart-container {
-        position: relative;
-        height: 400px;
-        margin: var(--spacing-md) 0;
-    }
-    
-    .date-range-selector {
-        display: flex;
-        gap: var(--spacing-sm);
-        margin-bottom: var(--spacing-lg);
-        flex-wrap: wrap;
-    }
-    
-    .date-range-btn {
-        padding: var(--spacing-sm) var(--spacing-md);
-        border: 1px solid var(--border-color);
-        background: var(--bg-color);
-        color: var(--text-color);
-        border-radius: var(--border-radius-sm);
-        cursor: pointer;
-        transition: var(--transition-base);
-    }
-    
-    .date-range-btn.active {
-        background: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-    }
-    
-    .date-range-btn:hover {
-        background: var(--primary-light);
-        color: white;
-    }
-    
-    .loading-spinner {
-        display: none;
-        text-align: center;
-        padding: var(--spacing-xl);
-    }
-    
-    .loading-spinner.active {
-        display: block;
-    }
-    
-    .export-controls {
-        display: flex;
-        gap: var(--spacing-sm);
-        margin-bottom: var(--spacing-md);
-        flex-wrap: wrap;
-    }
-    
-    .export-btn {
-        padding: var(--spacing-sm) var(--spacing-md);
-        background: var(--success-color);
-        color: white;
-        border: none;
-        border-radius: var(--border-radius-sm);
-        cursor: pointer;
-        transition: var(--transition-base);
-    }
-    
-    .export-btn:hover {
-        background: var(--success-dark);
-    }
-    
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: var(--spacing-lg);
-        margin-bottom: var(--spacing-xl);
-    }
-    
-    .metrics-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: var(--spacing-md);
-        margin-bottom: var(--spacing-lg);
-    }
-    
-    @media (max-width: 768px) {
-        .date-range-selector {
-            justify-content: center;
-        }
-        
-        .export-controls {
-            justify-content: center;
-        }
-        
-        .chart-container {
-            height: 300px;
-        }
-        
-        .metric-value {
-            font-size: 2rem;
-        }
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -149,29 +16,29 @@
             <h1 class="h3 mb-0">📊 لوحة التقارير</h1>
             <p class="text-muted">تحليلات شاملة لنظام الدولية</p>
         </div>
-        <div class="export-controls">
-            <button class="export-btn" onclick="exportReport('json')">
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-success btn-sm" onclick="exportReport('json')">
                 <i class="fas fa-download"></i> تصدير JSON
             </button>
-            <button class="export-btn" onclick="exportReport('csv')">
+            <button class="btn btn-success btn-sm" onclick="exportReport('csv')">
                 <i class="fas fa-file-csv"></i> تصدير CSV
             </button>
-            <button class="export-btn" onclick="generateCustomReport()">
+            <button class="btn btn-success btn-sm" onclick="generateCustomReport()">
                 <i class="fas fa-cog"></i> تقرير مخصص
             </button>
         </div>
     </div>
 
     <!-- Date Range Selector -->
-    <div class="date-range-selector">
-        <button class="date-range-btn active" data-range="7d">آخر 7 أيام</button>
-        <button class="date-range-btn" data-range="30d">آخر 30 يوم</button>
-        <button class="date-range-btn" data-range="90d">آخر 90 يوم</button>
-        <button class="date-range-btn" data-range="1y">آخر سنة</button>
+    <div class="d-flex gap-2 mb-3 flex-wrap">
+        <button class="btn btn-outline-primary btn-sm active" data-range="7d">آخر 7 أيام</button>
+        <button class="btn btn-outline-primary btn-sm" data-range="30d">آخر 30 يوم</button>
+        <button class="btn btn-outline-primary btn-sm" data-range="90d">آخر 90 يوم</button>
+        <button class="btn btn-outline-primary btn-sm" data-range="1y">آخر سنة</button>
     </div>
 
     <!-- Loading Spinner -->
-    <div class="loading-spinner" id="loadingSpinner">
+    <div class="text-center py-5" id="loadingSpinner">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">جاري التحميل...</span>
         </div>
@@ -181,48 +48,48 @@
     <!-- Dashboard Content -->
     <div id="dashboardContent">
         <!-- Overview Metrics -->
-        <div class="metrics-grid" id="metricsGrid">
+        <div class="row" id="metricsGrid">
             <!-- Metrics will be populated by JavaScript -->
         </div>
 
         <!-- Charts Grid -->
-        <div class="dashboard-grid">
+        <div class="row">
             <!-- Employee Analytics -->
-            <div class="dashboard-card">
+            <div class="card p-3 mb-3">
                 <h5 class="card-title mb-3">👥 تحليل الموظفين</h5>
-                <div class="chart-container">
+                <div class="chart-container" style="height:400px;">
                     <canvas id="employeeChart"></canvas>
                 </div>
             </div>
 
             <!-- Task Analytics -->
-            <div class="dashboard-card">
+            <div class="card p-3 mb-3">
                 <h5 class="card-title mb-3">📋 تحليل المهام</h5>
-                <div class="chart-container">
+                <div class="chart-container" style="height:400px;">
                     <canvas id="taskChart"></canvas>
                 </div>
             </div>
 
             <!-- Meeting Analytics -->
-            <div class="dashboard-card">
+            <div class="card p-3 mb-3">
                 <h5 class="card-title mb-3">🤝 تحليل الاجتماعات</h5>
-                <div class="chart-container">
+                <div class="chart-container" style="height:400px;">
                     <canvas id="meetingChart"></canvas>
                 </div>
             </div>
 
             <!-- Inventory Analytics -->
-            <div class="dashboard-card">
+            <div class="card p-3 mb-3">
                 <h5 class="card-title mb-3">📦 تحليل المخزون</h5>
-                <div class="chart-container">
+                <div class="chart-container" style="height:400px;">
                     <canvas id="inventoryChart"></canvas>
                 </div>
             </div>
 
             <!-- Trends Chart -->
-            <div class="dashboard-card" style="grid-column: 1 / -1;">
+            <div class="card p-3 mb-3" style="grid-column: 1 / -1;">
                 <h5 class="card-title mb-3">📈 الاتجاهات الزمنية</h5>
-                <div class="chart-container">
+                <div class="chart-container" style="height:400px;">
                     <canvas id="trendsChart"></canvas>
                 </div>
             </div>
@@ -329,9 +196,9 @@
 
     function setupEventListeners() {
         // Date range selector
-        document.querySelectorAll('.date-range-btn').forEach(btn => {
+        document.querySelectorAll('[data-range]').forEach(btn => {
             btn.addEventListener('click', function() {
-                document.querySelectorAll('.date-range-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('[data-range]').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 currentDateRange = this.dataset.range;
                 loadDashboardData();
@@ -386,9 +253,9 @@
         ];
         
         metricsGrid.innerHTML = metrics.map(metric => `
-            <div class="metric-card">
-                <div class="metric-value">${metric.icon} ${metric.value.toLocaleString('ar-EG')}</div>
-                <div class="metric-label">${metric.label}</div>
+            <div class="stats-card text-center" style="background:linear-gradient(135deg,#2563eb,#1e40af);color:white;">
+                <div class="h3 fw-bold">${metric.icon} ${metric.value.toLocaleString('ar-EG')}</div>
+                <div class="small opacity-75">${metric.label}</div>
             </div>
         `).join('');
     }

@@ -1,25 +1,70 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<h1>{% if company %}تعديل شركة{% else %}إنشاء شركة{% endif %}</h1>
-<form method="post" class="rtl" dir="rtl">
-  {% csrf_token %}
-  <div class="row g-3">
-    {{ form.non_field_errors }}
-    {% for field in form %}
-      <div class="col-md-6">
-        <label class="form-label">{{ field.label }}</label>
-        {{ field }}
-        {% if field.errors %}
-          <div class="text-danger small">{{ field.errors.0 }}</div>
-        {% endif %}
-      </div>
-    {% endfor %}
-  </div>
-  <div class="mt-3">
-    <a class="btn btn-secondary" href="{% if company %}{% url 'companies:detail' company.pk %}{% else %}{% url 'companies:list' %}{% endif %}">إلغاء</a>
-    <button class="btn btn-primary" type="submit">حفظ</button>
-  </div>
-</form>
-{% endblock %}
+<div class="page-content-wrapper">
+    <div class="page-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <h1><i class="fas fa-building me-2"></i>{% if company %}تعديل شركة{% else %}إنشاء شركة جديدة{% endif %}</h1>
+                <p>{% if company %}تعديل بيانات الشركة في النظام{% else %}إضافة شركة جديدة إلى النظام{% endif %}</p>
+            </div>
+            <a href="{% url 'companies:list' %}" class="btn btn-light">
+                <i class="fas fa-arrow-right me-2"></i>العودة للقائمة
+            </a>
+        </div>
+    </div>
 
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-edit me-2"></i>بيانات الشركة</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <div>{% for error in form.non_field_errors %}{{ error }}{% endfor %}</div>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            {% for field in form %}
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ field.id_for_label }}" class="form-label">
+                                        {{ field.label }}
+                                        {% if field.field.required %}<span class="required"></span>{% endif %}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <small class="form-text">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in field.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>حفظ
+                            </button>
+                            <a href="{% if company %}{% url 'companies:detail' company.pk %}{% else %}{% url 'companies:list' %}{% endif %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>إلغاء
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
