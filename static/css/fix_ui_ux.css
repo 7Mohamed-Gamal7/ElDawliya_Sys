@@ -1,0 +1,320 @@
+/* ============================================================
+   ELDAWLIYA HRMS - UI/UX CRITICAL FIX v1.0
+   ============================================================
+   استخدم هذا الملف لإصلاح المشاكل الجذرية في الواجهة:
+   1. تداخل الـ Sidebar مع المحتوى الرئيسي
+   2. تحسين تباين الألوان
+   3. إصلاح الـ Padding/Margin في لوحة التحكم
+   4. تنظيم بطاقات الإجراءات السريعة
+   
+   التعليمات:
+   - أضف هذا السطر في ملف base.html بعد تحميل bootstrap.rtl.min.css:
+     <link rel="stylesheet" href="{% static 'css/fix_ui_ux.css' %}">
+   ============================================================ */
+
+/* ===== 1. LAYOUT FIX: منع تداخل الـ Sidebar مع المحتوى ===== */
+
+/* إضافة padding للمحتوى الرئيسي */
+.main-content {
+    margin-right: 280px;
+    transition: margin-right 0.3s ease;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.main-content.expanded {
+    margin-right: 80px;
+}
+
+/* حاوية المحتوى - إضافة padding داخلي */
+.content-wrapper {
+    padding: 1.25rem 1.5rem;
+    min-height: calc(100vh - 180px);
+}
+
+/* ===== 2. SIDEBAR: تحسين التباين والألوان ===== */
+
+.sidebar {
+    background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+    width: 280px;
+}
+
+/* ألوان النصوص - تحسين التباين */
+.sidebar .nav-section-title {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 0.5rem 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    padding: 0.65rem 1.5rem;
+    border-right: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border-right-color: rgba(255, 255, 255, 0.3);
+}
+
+.sidebar .nav-link.active {
+    background: rgba(37, 99, 235, 0.25);
+    border-right-color: #3b82f6;
+    color: #ffffff;
+}
+
+/* أيقونات الـ Sidebar */
+.sidebar .nav-icon {
+    color: rgba(255, 255, 255, 0.7);
+    width: 20px;
+    margin-left: 0.75rem;
+    text-align: center;
+}
+
+.sidebar .nav-link:hover .nav-icon {
+    color: #ffffff;
+}
+
+/* ===== 3. TOP NAVBAR ===== */
+
+.top-navbar {
+    background: #ffffff;
+    padding: 0.7rem 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border-radius: 0 0 12px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+/* ===== 4. DASHBOARD CARDS: تنسيق البطاقات ===== */
+
+/* بطاقات الإجراءات السريعة - شبكة منتظمة */
+.hr-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.quick-action-btn {
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.85rem 1rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-size: 0.875rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    color: #fff;
+    text-decoration: none;
+}
+
+.quick-action-btn i {
+    font-size: 1.1rem;
+    margin-left: 0.5rem;
+}
+
+/* ألوان أزرار الإجراءات السريعة */
+.qa-green { background: linear-gradient(135deg, #22c55e, #15803d); }
+.qa-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.qa-amber { background: linear-gradient(135deg, #f59e0b, #b45309); }
+.qa-cyan { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+.qa-emerald { background: linear-gradient(135deg, #10b981, #047857); }
+.qa-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.qa-orange { background: linear-gradient(135deg, #f97316, #c2410c); }
+.qa-teal { background: linear-gradient(135deg, #14b8a6, #0f766e); }
+.qa-red { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+.qa-lime { background: linear-gradient(135deg, #84cc16, #4d7c0f); }
+
+/* ===== 5. STATS CARDS: بطاقات الإحصائيات ===== */
+
+.stats-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    border-radius: 1rem 1rem 0 0;
+}
+
+.stats-card:hover {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.stats-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+/* ===== 6. FOOTER ===== */
+
+.footer {
+    background: #fff;
+    padding: 1.5rem 2rem;
+    margin-top: 3rem;
+    border-radius: 15px 15px 0 0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    text-align: center;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+/* ===== 7. RESPONSIVE: تحسين الموبايل ===== */
+
+@media (max-width: 991px) {
+    .sidebar {
+        transform: translateX(100%);
+        z-index: 1050;
+        box-shadow: none;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+        box-shadow: -4px 0 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .main-content {
+        margin-right: 0;
+    }
+
+    .main-content.expanded {
+        margin-right: 0;
+    }
+
+    .top-navbar {
+        border-radius: 0;
+        padding: 0.6rem 1rem;
+    }
+
+    .content-wrapper {
+        padding: 0.75rem 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-card {
+        padding: 1.25rem;
+    }
+
+    .hr-quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        padding: 1.25rem;
+    }
+}
+
+/* ===== 8. BREADCRUMB ===== */
+
+.breadcrumb-custom {
+    background: none;
+    padding: 0.75rem 1.5rem 0;
+    margin-bottom: 0.5rem;
+}
+
+.breadcrumb-custom .breadcrumb-item + .breadcrumb-item::before {
+    color: #94a3b8;
+}
+
+/* ===== 9. UTILITIES ===== */
+
+/* Sidebar overlay للموبايل */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* منع التمرير عند فتح الـ Sidebar في الموبايل */
+body.sidebar-open {
+    overflow: hidden;
+}
+
+/* ===== 10. CARD IMPROVEMENTS للصفحة الرئيسية ===== */
+
+.dashboard-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.1);
+}
+
+.dashboard-card .card-body {
+    padding: 2rem 1.5rem;
+    text-align: center;
+}
+
+.dashboard-card .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.dashboard-card .card-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    color: #0f172a;
+}
+
+.dashboard-card .card-subtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+}

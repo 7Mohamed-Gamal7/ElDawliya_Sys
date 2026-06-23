@@ -20,317 +20,10 @@
     <!-- Master UI/UX Redesign Stylesheet -->
     <link rel="stylesheet" href="{% static 'hr_ui_ux_redesign/style.css' %}">
 
+    <!-- UI/UX Critical Fixes -->
+    <link rel="stylesheet" href="{% static 'css/fix_ui_ux.css' %}">
+
     <!-- Page-specific CSS -->
-    {% block extra_css %}{% endblock %}
-
-    <!-- Critical layout styles -->
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #64748b;
-            --success: #16a34a;
-            --warning: #d97706;
-            --danger: #dc2626;
-            --info: #0284c7;
-            --dark: #1e293b;
-            --light: #f8fafc;
-        }
-
-        * { font-family: 'Cairo', sans-serif; }
-
-        body {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            min-height: 100vh;
-        }
-
-        /* ===== Sidebar ===== */
-        .sidebar {
-            background: linear-gradient(135deg, var(--dark) 0%, #334155 100%);
-            height: 100vh;
-            width: 280px;
-            position: fixed;
-            top: 0;
-            right: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            box-shadow: -2px 0 20px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .sidebar.collapsed { width: 80px; }
-        .sidebar.collapsed .sidebar-nav { padding: 1rem 0.5rem; }
-        .sidebar.collapsed .logo-text,
-        .sidebar.collapsed .nav-text,
-        .sidebar.collapsed .nav-section-title,
-        .sidebar.collapsed .nav-badge { display: none; }
-
-        .sidebar-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .sidebar-header .logo {
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-nav {
-            padding: 1rem 0;
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-        }
-
-        .sidebar-nav::-webkit-scrollbar { width: 6px; }
-        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
-        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 3px; }
-
-        .nav-section { margin-bottom: 1.5rem; }
-        .nav-section-title {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 0.5rem 1.5rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .nav-item { margin: 0.25rem 0; }
-
-        .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 0.75rem 1.5rem;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-            border-radius: 0;
-            position: relative;
-        }
-
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            transform: translateX(-3px);
-        }
-
-        .nav-link.active {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-        }
-
-        .nav-link.active::before {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: white;
-        }
-
-        .nav-link:focus {
-            outline: 2px solid rgba(255, 255, 255, 0.5);
-            outline-offset: -2px;
-        }
-
-        .nav-icon {
-            width: 20px;
-            margin-left: 1rem;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-
-        .nav-badge {
-            background: var(--danger);
-            color: white;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 50px;
-            margin-right: auto;
-        }
-
-        .ai-badge {
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
-            color: white;
-            font-size: 0.65rem;
-            padding: 0.15rem 0.4rem;
-            border-radius: 50px;
-            margin-right: auto;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
-        }
-
-        .nav-external { font-size: 0.8rem; margin-right: auto; opacity: 0.7; }
-
-        .nav-section:has(.ai-badge) .nav-section-title {
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 700;
-        }
-
-        .nav-link:has(.ai-badge):hover {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1));
-            transform: translateX(-5px);
-        }
-
-        /* ===== Main Content ===== */
-        .main-content {
-            margin-right: 280px;
-            transition: all 0.3s ease;
-            min-height: 100vh;
-        }
-
-        .main-content.expanded { margin-right: 80px; }
-
-        .top-navbar {
-            background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 0;
-            border-radius: 0 0 15px 15px;
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--dark);
-            text-decoration: none;
-        }
-
-        .user-menu { display: flex; align-items: center; gap: 1rem; }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--primary);
-        }
-
-        .sidebar-toggle {
-            background: none;
-            border: none;
-            color: var(--dark);
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-toggle:hover { background: var(--light); }
-
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-        }
-
-        .dropdown-item {
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin: 0.25rem;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-item:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            background: var(--danger);
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid white;
-        }
-
-        .breadcrumb-custom {
-            background: none;
-            padding: 0;
-            margin-bottom: 1rem;
-        }
-
-        .breadcrumb-custom .breadcrumb-item a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .footer {
-            background: white;
-            padding: 2rem;
-            margin-top: 3rem;
-            border-radius: 15px 15px 0 0;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            color: var(--secondary);
-        }
-
-        /* ===== Responsive ===== */
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(100%); }
-            .sidebar.show { transform: translateX(0); }
-            .main-content { margin-right: 0; }
-            .main-content.expanded { margin-right: 0; }
-        }
-
-        /* ===== Loading ===== */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-        }
-
-        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -338,6 +31,9 @@
     <div class="loading-overlay hidden" id="loadingOverlay">
         <div class="spinner"></div>
     </div>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
@@ -725,7 +421,7 @@
     <script>
         // Unified Sidebar Toggle Function
         function handleSidebarToggle() {
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= 991) {
                 toggleMobileSidebar();
             } else {
                 toggleDesktopSidebar();
@@ -736,13 +432,35 @@
         function toggleDesktopSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
-
             sidebar.classList.toggle('collapsed');
             mainContent.classList.toggle('expanded');
-
-            // Save sidebar state
             localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
         }
+
+        // Mobile Sidebar Toggle
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const isOpen = sidebar.classList.contains('show');
+
+            if (isOpen) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            } else {
+                sidebar.classList.add('show');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Close mobile sidebar when overlay is clicked
+        document.addEventListener('DOMContentLoaded', function() {
+            const overlay = document.getElementById('sidebarOverlay');
+            if (overlay) {
+                overlay.addEventListener('click', toggleMobileSidebar);
+            }
+        });
 
         // Restore sidebar state on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -750,115 +468,41 @@
             const mainContent = document.getElementById('mainContent');
             const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
 
-            if (isCollapsed && window.innerWidth > 768) {
+            if (isCollapsed && window.innerWidth > 991) {
                 sidebar.classList.add('collapsed');
                 mainContent.classList.add('expanded');
             }
         });
 
-        // Mobile Sidebar Toggle
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('show');
-
-            // Add overlay for mobile
-            if (window.innerWidth <= 768) {
-                let overlay = document.getElementById('sidebarOverlay');
-                if (!overlay) {
-                    overlay = document.createElement('div');
-                    overlay.id = 'sidebarOverlay';
-                    overlay.className = 'sidebar-overlay';
-                    overlay.style.cssText = `
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: rgba(0, 0, 0, 0.5);
-                        z-index: 999;
-                        opacity: 0;
-                        visibility: hidden;
-                        transition: all 0.3s ease;
-                    `;
-                    document.body.appendChild(overlay);
-
-                    overlay.addEventListener('click', function() {
-                        sidebar.classList.remove('show');
-                        overlay.style.opacity = '0';
-                        overlay.style.visibility = 'hidden';
-                    });
-                }
-
-                if (sidebar.classList.contains('show')) {
-                    overlay.style.opacity = '1';
-                    overlay.style.visibility = 'visible';
-                } else {
-                    overlay.style.opacity = '0';
-                    overlay.style.visibility = 'hidden';
-                }
-            }
-        }
-
-        // Enhanced sidebar scrolling for active items
-        function scrollToActiveNavItem() {
+        // Scroll to active nav item
+        document.addEventListener('DOMContentLoaded', function() {
             const activeItem = document.querySelector('.nav-link.active');
             const sidebarNav = document.querySelector('.sidebar-nav');
-
             if (activeItem && sidebarNav) {
                 const itemTop = activeItem.offsetTop;
-                const itemHeight = activeItem.offsetHeight;
                 const navHeight = sidebarNav.offsetHeight;
                 const scrollTop = sidebarNav.scrollTop;
-
-                // Check if item is not fully visible
-                if (itemTop < scrollTop || itemTop + itemHeight > scrollTop + navHeight) {
+                if (itemTop < scrollTop || itemTop + activeItem.offsetHeight > scrollTop + navHeight) {
                     sidebarNav.scrollTo({
-                        top: itemTop - navHeight / 2 + itemHeight / 2,
+                        top: itemTop - navHeight / 2 + activeItem.offsetHeight / 2,
                         behavior: 'smooth'
                     });
                 }
             }
-        }
+        });
 
-        // Keyboard navigation for sidebar
-        function initSidebarKeyboardNavigation() {
-            const sidebarNav = document.querySelector('.sidebar-nav');
-            const navLinks = sidebarNav.querySelectorAll('.nav-link');
-
-            navLinks.forEach((link, index) => {
-                link.addEventListener('keydown', function(e) {
-                    let targetIndex = index;
-
-                    switch(e.key) {
-                        case 'ArrowDown':
-                            e.preventDefault();
-                            targetIndex = Math.min(index + 1, navLinks.length - 1);
-                            break;
-                        case 'ArrowUp':
-                            e.preventDefault();
-                            targetIndex = Math.max(index - 1, 0);
-                            break;
-                        case 'Home':
-                            e.preventDefault();
-                            targetIndex = 0;
-                            break;
-                        case 'End':
-                            e.preventDefault();
-                            targetIndex = navLinks.length - 1;
-                            break;
-                    }
-
-                    if (targetIndex !== index) {
-                        navLinks[targetIndex].focus();
-                        // Ensure focused item is visible
-                        navLinks[targetIndex].scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'nearest'
-                        });
-                    }
-                });
+        // Handle window resize for mobile sidebar
+        document.addEventListener('DOMContentLoaded', function() {
+            window.addEventListener('resize', function() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                if (window.innerWidth > 991) {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
             });
-        }
+        });
 
         // Auto-hide alerts after 5 seconds
         setTimeout(function() {
@@ -887,54 +531,9 @@
             }
         });
 
-        // Auto-refresh notifications every 5 minutes
-        // TODO: Re-enable when hr:notifications_count endpoint is available
-        /*
-        setInterval(function() {
-            fetch('/api/notifications/count/')
-                .then(response => response.json())
-                .then(data => {
-                    const badge = document.querySelector('.notification-badge');
-                    if (data.count > 0) {
-                        if (badge) {
-                            badge.textContent = data.count;
-                        } else {
-                            // Create badge if it doesn't exist
-                            const bellIcon = document.querySelector('.fa-bell').parentElement;
-                            const newBadge = document.createElement('span');
-                            newBadge.className = 'notification-badge';
-                            newBadge.textContent = data.count;
-                            bellIcon.appendChild(newBadge);
-                        }
-                    } else if (badge) {
-                        badge.remove();
-                    }
-                })
-                .catch(error => console.log('Error fetching notifications:', error));
-        }, 300000); // 5 minutes
-        */
-
         // Page loading handling
         document.addEventListener('DOMContentLoaded', function() {
             hideLoading();
-
-            // Initialize sidebar enhancements
-            scrollToActiveNavItem();
-            initSidebarKeyboardNavigation();
-
-            // Handle window resize for mobile sidebar
-            window.addEventListener('resize', function() {
-                const sidebar = document.getElementById('sidebar');
-                const overlay = document.getElementById('sidebarOverlay');
-
-                if (window.innerWidth > 768) {
-                    sidebar.classList.remove('show');
-                    if (overlay) {
-                        overlay.style.opacity = '0';
-                        overlay.style.visibility = 'hidden';
-                    }
-                }
-            });
         });
 
         // Form submission loading

@@ -243,52 +243,52 @@
                     إجراءات سريعة
                 </h5>
 
-                <a href="{% url 'employees:add' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, var(--hr-success), #059669);">
+                <a href="{% url 'employees:add' %}" class="quick-action-btn qa-green">
                     <i class="fas fa-user-plus me-2"></i>
                     إضافة موظف جديد
                 </a>
 
-                <a href="{% url 'hr:attendance:mark' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, var(--hr-primary), var(--hr-secondary));">
+                <a href="{% url 'hr:attendance:mark' %}" class="quick-action-btn qa-blue">
                     <i class="fas fa-clock me-2"></i>
                     تسجيل حضور
                 </a>
 
-                <a href="{% url 'hr:leaves:dashboard' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, var(--hr-warning), #d97706);">
+                <a href="{% url 'hr:leaves:dashboard' %}" class="quick-action-btn qa-amber">
                     <i class="fas fa-calendar-plus me-2"></i>
                     إدارة الإجازات
                 </a>
 
-                <a href="{% url 'payrolls:dashboard' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, var(--hr-info), #0891b2);">
+                <a href="{% url 'payrolls:dashboard' %}" class="quick-action-btn qa-cyan">
                     <i class="fas fa-money-bill me-2"></i>
                     إدارة الرواتب
                 </a>
 
-                <a href="{% url 'employees:health_insurance_providers_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <a href="{% url 'employees:health_insurance_providers_list' %}" class="quick-action-btn qa-emerald">
                     <i class="fas fa-heartbeat me-2"></i>
                     إدارة التأمين الصحي
                 </a>
 
-                <a href="{% url 'employees:social_insurance_job_titles_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <a href="{% url 'employees:social_insurance_job_titles_list' %}" class="quick-action-btn qa-purple">
                     <i class="fas fa-shield-alt me-2"></i>
                     التأمينات الاجتماعية
                 </a>
 
-                <a href="{% url 'employees:salary_components_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <a href="{% url 'employees:salary_components_list' %}" class="quick-action-btn qa-orange">
                     <i class="fas fa-coins me-2"></i>
                     مكونات الراتب
                 </a>
 
-                <a href="{% url 'employees:vehicles_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                <a href="{% url 'employees:vehicles_list' %}" class="quick-action-btn qa-teal">
                     <i class="fas fa-bus me-2"></i>
                     إدارة المركبات
                 </a>
 
-                <a href="{% url 'employees:work_schedules_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <a href="{% url 'employees:work_schedules_list' %}" class="quick-action-btn qa-red">
                     <i class="fas fa-clock me-2"></i>
                     جداول العمل
                 </a>
 
-                <a href="{% url 'employees:evaluation_criteria_list' %}" class="btn w-100 d-flex align-items-center justify-content-center mb-2" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
+                <a href="{% url 'employees:evaluation_criteria_list' %}" class="quick-action-btn qa-lime">
                     <i class="fas fa-chart-line me-2"></i>
                     معايير التقييم
                 </a>
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('HR Dashboard loaded successfully');
 
     // Add loading states to buttons
-    const buttons = document.querySelectorAll('.btn.w-100, .card.p-3.text-decoration-none');
+    const buttons = document.querySelectorAll('.quick-action-btn, .card.p-3.text-decoration-none');
     buttons.forEach(button => {
         button.addEventListener('click', function() {
             const icon = this.querySelector('i');

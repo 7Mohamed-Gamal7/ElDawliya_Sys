@@ -6,372 +6,349 @@
 
 {% block extra_css %}
 <style>
-/* Minimal overrides for dashboard-specific layout */
 .dept-cards-container { display: none; }
 .dept-cards-container.active { display: block; }
 
 #aiChatSection:not(.show) { display: none; }
 
-#sidebarCollapse {
-    position: fixed; top: 10px; right: 290px; z-index: 1025;
-    width: 40px; height: 40px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-body.sidebar-collapsed #sidebarCollapse { right: 90px; }
-
-@media (max-width: 992px) {
-    #sidebarCollapse { right: 15px; }
-}
-
-.sidebar-overlay {
-    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5); z-index: 1025;
-}
-.sidebar-overlay.show { display: block; }
-
-body.sidebar-collapsed #main-sidebar { width: 80px; }
-body.sidebar-collapsed #main-sidebar .nav-text,
-body.sidebar-collapsed #main-sidebar .nav-section-title { display: none; }
-
 .dashboard-card {
-    border-radius: 1rem; overflow: hidden; margin-bottom: 1.5rem;
+    border-radius: var(--radius-xl, 1rem);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
+    background: #fff;
+    border: 1px solid var(--color-border, #e2e8f0);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
 }
-.dashboard-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0,0,0,0.1));
+}
 .dashboard-card .card-body {
-    padding: 2rem 1.5rem; text-align: center;
+    padding: 2rem 1.5rem;
+    text-align: center;
 }
-.dashboard-card .card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-.dashboard-card .card-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.25rem; }
-.dashboard-card .card-subtitle { font-size: 0.85rem; opacity: 0.8; }
+.dashboard-card .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+.dashboard-card .card-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+.dashboard-card .card-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
 
 .welcome-icon { font-size: 3rem; }
 
 .ai-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 1rem; padding: 2.5rem; text-align: center; color: #fff;
-    box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+    background: linear-gradient(135deg, var(--primary-600, #2563eb) 0%, var(--primary-800, #1e40af) 100%);
+    border-radius: var(--radius-xl, 1rem);
+    padding: 2.5rem;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(37,99,235,0.3);
     margin-bottom: 2rem;
 }
+
+.dept-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+.dept-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    background: white;
+    border: 1px solid var(--color-border, #e2e8f0);
+    color: var(--color-body, #0f172a);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
+}
+.dept-pill:hover {
+    border-color: var(--primary, #2563eb);
+    color: var(--primary, #2563eb);
+    box-shadow: 0 4px 12px rgba(37,99,235,0.15);
+    transform: translateY(-2px);
+}
+.dept-pill.active {
+    background: var(--primary, #2563eb);
+    border-color: var(--primary, #2563eb);
+    color: white;
+    box-shadow: 0 4px 15px rgba(37,99,235,0.3);
+}
+.dept-pill i { width: 18px; text-align: center; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="wrapper position-relative">
-    <!-- Sidebar Toggle -->
-    <button type="button" id="sidebarCollapse" class="btn btn-primary">
-        <i class="fas fa-align-right"></i>
+<!-- Department Pills -->
+<div class="dept-pills" id="deptPills">
+    <button class="dept-pill active" data-dept="all">
+        <i class="fas fa-th-large"></i><span>الكل</span>
     </button>
+    {% if perms.Hr.view_employee or perms.Hr.add_employee or perms.Hr.change_employee or perms.Hr.delete_employee %}
+    <button class="dept-pill" data-dept="hr">
+        <i class="fas fa-users"></i><span>الموارد البشرية</span>
+    </button>
+    {% endif %}
+    {% if perms.inventory.view_product or perms.inventory.add_product or perms.inventory.change_product or perms.inventory.delete_product %}
+    <button class="dept-pill" data-dept="warehouse">
+        <i class="fas fa-warehouse"></i><span>المخزن</span>
+    </button>
+    {% endif %}
+    {% if perms.meetings.view_meeting or perms.meetings.add_meeting or perms.meetings.change_meeting or perms.meetings.delete_meeting %}
+    <button class="dept-pill" data-dept="meetings">
+        <i class="fas fa-calendar"></i><span>الاجتماعات</span>
+    </button>
+    {% endif %}
+    {% if perms.tasks.view_task or perms.tasks.add_task or perms.tasks.change_task or perms.tasks.delete_task %}
+    <button class="dept-pill" data-dept="tasks">
+        <i class="fas fa-tasks"></i><span>مهام الاجتماعات</span>
+    </button>
+    {% endif %}
+    {% if perms.Purchase_orders.view_purchaseorder or perms.Purchase_orders.add_purchaseorder or perms.Purchase_orders.change_purchaseorder or perms.Purchase_orders.delete_purchaseorder %}
+    <button class="dept-pill" data-dept="purchase">
+        <i class="fas fa-shopping-cart"></i><span>طلبات الشراء</span>
+    </button>
+    {% endif %}
+    {% if user.is_superuser %}
+    <button class="dept-pill" data-dept="sysadmin">
+        <i class="fas fa-cogs"></i><span>مدير النظام</span>
+    </button>
+    {% endif %}
+    {% if perms.cars.view_car or perms.cars.add_car or perms.cars.change_car or perms.cars.delete_car %}
+    <button class="dept-pill" data-dept="cars">
+        <i class="fas fa-car"></i><span>السيارات</span>
+    </button>
+    {% endif %}
+    {% if perms.notifications.view_notification %}
+    <button class="dept-pill" data-dept="notifications">
+        <i class="fas fa-bell"></i><span>التنبيهات</span>
+    </button>
+    {% endif %}
+    {% if perms.employee_tasks.view_employeetask or perms.employee_tasks.add_employeetask or perms.employee_tasks.change_employeetask or perms.employee_tasks.delete_employeetask %}
+    <button class="dept-pill" data-dept="employee_tasks">
+        <i class="fas fa-user-check"></i><span>مهام الموظفين</span>
+    </button>
+    {% endif %}
+</div>
 
-    <!-- Department Sidebar -->
-    <nav id="sidebar" class="position-fixed" style="width:280px;top:0;right:0;bottom:0;z-index:1030;background:linear-gradient(135deg,var(--dark),#334155);overflow-y:auto;transition:all .3s">
-        <div class="p-3 border-bottom border-white border-opacity-10 text-center">
-            <h5 class="text-white mb-0"><i class="fas fa-th-large ms-2"></i>الأقسام</h5>
-        </div>
-        <ul class="list-unstyled mt-2">
-            {% if perms.Hr.view_employee or perms.Hr.add_employee or perms.Hr.change_employee or perms.Hr.delete_employee %}
-            <li class="department-item px-3 py-2 text-white-50 cursor-pointer d-flex align-items-center gap-2" data-dept="hr" style="cursor:pointer;transition:all .3s;border-radius:0;margin:2px 8px">
-                <i class="fas fa-users" style="width:22px;text-align:center"></i><span>الموارد البشرية</span>
-            </li>
-            {% endif %}
-            {% if perms.inventory.view_product or perms.inventory.add_product or perms.inventory.change_product or perms.inventory.delete_product %}
-            <li class="department-item px-3 py-2 text-white-50 d-flex align-items-center gap-2" data-dept="warehouse" style="cursor:pointer;transition:all .3s;border-radius:0;margin:2px 8px">
-                <i class="fas fa-warehouse" style="width:22px;text-align:center"></i><span>المخزن</span>
-            </li>
-            {% endif %}
-            {% if perms.meetings.view_meeting or perms.meetings.add_meeting or perms.meetings.change_meeting or perms.meetings.delete_meeting %}
-            <li class="department-item px-3 py-2 text-white-50 d-flex align-items-center gap-2" data-dept="meetings" style="cursor:pointer;transition:all .3s;border-radius:0;margin:2px 8px">
-                <i class="fas fa-calendar" style="width:22px;text-align:center"></i><span>الاجتماعات</span>
-            </li>
-            {% endif %}
-            {% if perms.tasks.view_task or perms.tasks.add_task or perms.tasks.change_task or perms.tasks.delete_task %}
-            <li class="department-item px-3 py-2 text-white-50 d-flex align-items-center gap-2" data-dept="tasks" style="cursor:pointer;transition:all .3s;border-radius:0;margin:2px 8px">
-                <i class="fas fa-tasks" style="width:22px;text-align:center"></i><span>مهام الاجتماعات</span>
-            </li>
-            {% endif %}
-            {% if perms.Purchase_orders.view_purchaseorder or perms.Purchase_orders.add_purchaseorder or perms.Purchase_orders.change_purchaseorder or perms.Purchase_orders.delete_purchaseorder %}
-            <li class="department-item px-3 py-2 text-white-50 d-flex align-items-center gap-2" data-dept="purchase" style="cursor:pointer;transition:all .3s;border-radius:0;margin:2px 8px">
-                <i class="fas fa-shopping-cart" style="width:22px;text-align:center"></i><span>طلبات الشراء</span>
-            </li>
-            {% endif %}
-            {% if user.is_superuser %}
-            <li class="department-item px-3 py-2 text-white-50 d-flex align-items-center gap-2" data-dept="sysadmin" style="cursor:pointer;transition:all .3s;border-radius:0;margin:2px 8px">
-                <i class="fas fa-cogs" style="width:22px;text-align:center"></i><span>مدير النظام</span>
-            </li>
-            {% endif %}
-            {% if perms.cars.view_car or perms.cars.add_car or perms.cars.change_car or perms.cars.delete_car %}
-            <li class="department-item px-3 py-2 text-white-50 d-flex align-items-center gap-2" data-dept="cars" style="cursor:pointer;transition:all .3s;border-radius:0;margin:2px 8px">
-                <i class="fas fa-car" style="width:22px;text-align:center"></i><span>السيارات</span>
-            </li>
-            {% endif %}
-            {% if perms.notifications.view_notification %}
-            <li class="department-item px-3 py-2 text-white-50 d-flex align-items-center gap-2" data-dept="notifications" style="cursor:pointer;transition:all .3s;border-radius:0;margin:2px 8px">
-                <i class="fas fa-bell" style="width:22px;text-align:center"></i><span>التنبيهات</span>
-            </li>
-            {% endif %}
-            {% if perms.employee_tasks.view_employeetask or perms.employee_tasks.add_employeetask or perms.employee_tasks.change_employeetask or perms.employee_tasks.delete_employeetask %}
-            <li class="department-item px-3 py-2 text-white-50 d-flex align-items-center gap-2" data-dept="employee_tasks" style="cursor:pointer;transition:all .3s;border-radius:0;margin:2px 8px">
-                <i class="fas fa-user-check" style="width:22px;text-align:center"></i><span>مهام الموظفين</span>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
+<!-- Welcome Section -->
+<div id="welcome-section">
+    <div class="ai-section">
+        <div class="mb-3 welcome-icon"><i class="fas fa-robot"></i></div>
+        <h3 class="fw-bold mb-2">مرحباً بك في نظام الدولية</h3>
+        <p class="mb-3 opacity-75">اختر قسماً من الأقسام أعلاه للوصول إلى الخدمات</p>
+        <a href="{% url 'api:ai_chat' %}" class="btn btn-light btn-lg rounded-pill px-4">
+            <i class="fas fa-comment-dots ms-2"></i>تحدث مع المساعد الذكي
+        </a>
+    </div>
+    <div class="text-center mt-3 mb-4" id="showAiChatBtn" style="display:none">
+        <button class="btn btn-outline-primary" onclick="toggleAiChat()">
+            <i class="fas fa-robot ms-2"></i>إظهار المساعد الذكي
+        </button>
+    </div>
+</div>
 
-    <!-- Overlay for mobile -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <!-- Main Content -->
-    <div id="content" class="page-content-wrapper" style="margin-right:280px;padding-top:0;transition:all .3s">
-        <!-- Top Bar -->
-        <div class="d-flex align-items-center justify-content-between mb-4">
+<!-- AI Chat Quick Access -->
+<div id="aiChatSection" class="mb-4">
+    <a href="{% url 'api:ai_chat' %}" class="text-decoration-none">
+        <div class="ai-section d-flex align-items-center justify-content-between text-end" style="cursor:pointer">
             <div>
-                <h5 class="mb-1"><i class="fas fa-tachometer-alt ms-2 text-primary"></i>لوحة التحكم الرئيسية</h5>
+                <h4 class="fw-bold mb-1">المساعد الذكي</h4>
+                <p class="mb-0 opacity-75">تحدث مع الذكاء الاصطناعي للحصول على المساعدة</p>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-outline-info btn-sm" id="aiChatToggleBtn" onclick="toggleAiChat()" title="المساعد الذكي">
-                    <i class="fas fa-robot"></i>
-                    <span class="d-none d-md-inline-block ms-1">المساعد الذكي</span>
-                </button>
-                <div class="user-info d-flex align-items-center gap-1 bg-light rounded-pill px-3 py-1">
-                    <i class="fas fa-user-circle text-primary"></i>
-                    <span class="fw-semibold small">{{ request.user.first_name }} {{ request.user.last_name }}</span>
-                </div>
-                <a href="{% url 'notifications:user_notifications' %}" class="btn btn-outline-primary btn-sm position-relative">
-                    <i class="fas fa-bell"></i>
-                    {% if unread_notifications_count > 0 %}
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {{ unread_notifications_count }}
-                    </span>
-                    {% endif %}
-                </a>
-                <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger btn-sm">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="d-none d-md-inline-block ms-1">تسجيل الخروج</span>
-                </a>
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{% url 'administrator:admin_dashboard' %}"><i class="fas fa-user-cog ms-2"></i>الإعدادات</a></li>
-                        <li><a class="dropdown-item" href="{% url 'notifications:user_notifications' %}"><i class="fas fa-bell ms-2"></i>تنبيهاتي</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'accounts:dashboard' %}"><i class="fas fa-tachometer-alt ms-2"></i>لوحة التحكم</a></li>
-                    </ul>
-                </div>
-            </div>
+            <div class="welcome-icon"><i class="fas fa-robot"></i></div>
         </div>
+    </a>
+</div>
 
-        <!-- Welcome Section -->
-        <div id="welcome-section">
-            <div class="ai-section">
-                <div class="mb-3 welcome-icon"><i class="fas fa-robot"></i></div>
-                <h3 class="fw-bold mb-2">مرحباً بك في نظام الدولية</h3>
-                <p class="mb-3 opacity-75">اختر قسماً من القائمة الجانبية للوصول إلى الخدمات</p>
-                <a href="{% url 'api:ai_chat' %}" class="btn btn-light btn-lg rounded-pill px-4">
-                    <i class="fas fa-comment-dots ms-2"></i>تحدث مع المساعد الذكي
-                </a>
-            </div>
-            <div class="text-center mt-3 mb-4" id="showAiChatBtn" style="display:none">
-                <button class="btn btn-outline-primary" onclick="toggleAiChat()">
-                    <i class="fas fa-robot ms-2"></i>إظهار المساعد الذكي
-                </button>
-            </div>
-        </div>
-
-        <!-- AI Chat Quick Access -->
-        <div id="aiChatSection" class="mb-4">
-            <a href="{% url 'api:ai_chat' %}" class="text-decoration-none">
-                <div class="ai-section d-flex align-items-center justify-content-between text-end" style="cursor:pointer">
-                    <div>
-                        <h4 class="fw-bold mb-1">المساعد الذكي</h4>
-                        <p class="mb-0 opacity-75">تحدث مع الذكاء الاصطناعي للحصول على المساعدة</p>
+<!-- ===== HR Department Cards ===== -->
+<div class="dept-cards-container active" id="hr-cards">
+    <h4 class="mb-3"><i class="fas fa-users ms-2 text-primary"></i>قسم الموارد البشرية</h4>
+    <div class="row">
+        {% with modules=hr_modules|default:None %}
+        {% if modules %}
+            {% for module in modules %}
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ module.url }}" class="text-decoration-none">
+                    <div class="dashboard-card card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="card-icon text-primary"><i class="fas {{ module.icon }}"></i></div>
+                            <h5 class="card-title">{{ module.name }}</h5>
+                            <p class="card-subtitle text-muted">{{ module.description|default:"وصف الوحدة" }}</p>
+                        </div>
                     </div>
-                    <div class="welcome-icon"><i class="fas fa-robot"></i></div>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'hr:hr_dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-primary"><i class="fas fa-home"></i></div><h5 class="card-title">الصفحة الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية للموارد البشرية</p></div></div></a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'employees:index' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-primary"><i class="fas fa-id-card"></i></div><h5 class="card-title">سجل الموظفين</h5><p class="card-subtitle text-muted">عرض وتعديل بيانات الموظفين</p></div></div></a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'attendance:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-primary"><i class="fas fa-clock"></i></div><h5 class="card-title">نظام الحضور والانصراف</h5><p class="card-subtitle text-muted">إدارة الحضور والانصراف</p></div></div></a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'hr:leaves:leave_dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-success"><i class="fas fa-calendar-alt"></i></div><h5 class="card-title">نظام الإجازات</h5><p class="card-subtitle text-muted">إدارة إجازات الموظفين</p></div></div></a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'insurance:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-info"><i class="fas fa-shield-alt"></i></div><h5 class="card-title">نظام التأمين</h5><p class="card-subtitle text-muted">إدارة تأمين الموظفين</p></div></div></a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'evaluations:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-warning"><i class="fas fa-star"></i></div><h5 class="card-title">تقييم الأداء</h5><p class="card-subtitle text-muted">تقييم أداء الموظفين</p></div></div></a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'training:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-purple" style="color:#8b5cf6"><i class="fas fa-graduation-cap"></i></div><h5 class="card-title">نظام التدريب</h5><p class="card-subtitle text-muted">برامج التدريب والتطوير</p></div></div></a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'loans:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-hand-holding-usd"></i></div><h5 class="card-title">نظام القروض</h5><p class="card-subtitle text-muted">إدارة قروض الموظفين</p></div></div></a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'reporting:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-secondary"><i class="fas fa-chart-bar"></i></div><h5 class="card-title">تقارير الموارد البشرية</h5><p class="card-subtitle text-muted">تقارير شاملة وتحليلات</p></div></div></a>
+            </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+</div>
+
+<!-- ===== Cars Department ===== -->
+<div class="dept-cards-container" id="cars-cards">
+    <h4 class="mb-3"><i class="fas fa-car ms-2" style="color:#4CAF50"></i>حساب سيارات نقل الموظفين</h4>
+    <div class="row">
+        <div class="col-md-6 col-lg-4">
+            <a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#4CAF50"><i class="fas fa-home"></i></div><h5 class="card-title">الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية لتطبيق السيارات</p></div></div></a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#4CAF50"><i class="fas fa-car"></i></div><h5 class="card-title">قائمة السيارات</h5><p class="card-subtitle text-muted">عرض وإدارة السيارات</p></div></div></a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#4CAF50"><i class="fas fa-building"></i></div><h5 class="card-title">الموردين</h5><p class="card-subtitle text-muted">إدارة موردي السيارات</p></div></div></a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#4CAF50"><i class="fas fa-route"></i></div><h5 class="card-title">الرحلات</h5><p class="card-subtitle text-muted">إدارة رحلات السيارات</p></div></div></a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Warehouse Department ===== -->
+<div class="dept-cards-container" id="warehouse-cards">
+    <h4 class="mb-3"><i class="fas fa-warehouse ms-2 text-warning"></i>قسم المخزن</h4>
+    <div class="row">
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-warning"><i class="fas fa-home"></i></div><h5 class="card-title">الصفحة الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية للمخزن</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-warning"><i class="fas fa-box"></i></div><h5 class="card-title">قطع الغيار</h5><p class="card-subtitle text-muted">إدارة مخزون قطع الغيار</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-warning"><i class="fas fa-file-invoice"></i></div><h5 class="card-title">الفواتير</h5><p class="card-subtitle text-muted">إدارة فواتير المخزن</p></div></div></a></div>
+    </div>
+</div>
+
+<!-- ===== Meetings Department ===== -->
+<div class="dept-cards-container" id="meetings-cards">
+    <h4 class="mb-3"><i class="fas fa-calendar ms-2" style="color:#6f42c1"></i>قسم الاجتماعات</h4>
+    <div class="row">
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#6f42c1"><i class="fas fa-home"></i></div><h5 class="card-title">الصفحة الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية للاجتماعات</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#6f42c1"><i class="fas fa-calendar-alt"></i></div><h5 class="card-title">قائمة الاجتماعات</h5><p class="card-subtitle text-muted">عرض جميع الاجتماعات</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#6f42c1"><i class="fas fa-plus"></i></div><h5 class="card-title">إنشاء اجتماع</h5><p class="card-subtitle text-muted">إضافة اجتماع جديد</p></div></div></a></div>
+    </div>
+</div>
+
+<!-- ===== Tasks Department ===== -->
+<div class="dept-cards-container" id="tasks-cards">
+    <h4 class="mb-3"><i class="fas fa-tasks ms-2" style="color:#20c997"></i>قسم المهام</h4>
+    <div class="row">
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#20c997"><i class="fas fa-home"></i></div><h5 class="card-title">الصفحة الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية للمهام</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#20c997"><i class="fas fa-tasks"></i></div><h5 class="card-title">قائمة المهام</h5><p class="card-subtitle text-muted">عرض جميع المهام</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#20c997"><i class="fas fa-plus"></i></div><h5 class="card-title">إنشاء مهمة</h5><p class="card-subtitle text-muted">إضافة مهمة جديدة</p></div></div></a></div>
+    </div>
+</div>
+
+<!-- ===== Purchase Orders Department ===== -->
+<div class="dept-cards-container" id="purchase-cards">
+    <h4 class="mb-3"><i class="fas fa-shopping-cart ms-2" style="color:#fd7e14"></i>قسم طلبات الشراء</h4>
+    <div class="row">
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#fd7e14"><i class="fas fa-home"></i></div><h5 class="card-title">الصفحة الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية لطلبات الشراء</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#fd7e14"><i class="fas fa-shopping-cart"></i></div><h5 class="card-title">طلبات الشراء</h5><p class="card-subtitle text-muted">عرض جميع طلبات الشراء</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#fd7e14"><i class="fas fa-plus"></i></div><h5 class="card-title">إنشاء طلب شراء</h5><p class="card-subtitle text-muted">إضافة طلب شراء جديد</p></div></div></a></div>
+    </div>
+</div>
+
+<!-- ===== Dynamic Department Modules ===== -->
+{% for dept_url_name, modules in department_modules.items %}
+<div class="dept-cards-container" id="{{ dept_url_name }}-cards">
+    {% for dept in user_departments %}
+        {% if dept.url_name == dept_url_name or dept.name.lower|slugify == dept_url_name %}
+    <h4 class="mb-3">{{ dept.name }}</h4>
+        {% endif %}
+    {% empty %}
+    <h4 class="mb-3">الوحدات</h4>
+    {% endfor %}
+    <div class="row">
+        {% for module in modules %}
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ module.url }}" class="text-decoration-none">
+                <div class="dashboard-card card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="card-icon" style="color:{{ module.bg_color|default:'#2563eb' }}">
+                            <i class="fas {{ module.icon|default:'fa-puzzle-piece' }}"></i>
+                        </div>
+                        <h5 class="card-title">{{ module.name }}</h5>
+                        <p class="card-subtitle text-muted">{{ module.description|default:"وصف الوحدة" }}</p>
+                    </div>
                 </div>
             </a>
         </div>
-
-        <!-- ===== HR Department Cards ===== -->
-        <div class="dept-cards-container" id="hr-cards">
-            <h4 class="mb-3"><i class="fas fa-users ms-2 text-primary"></i>قسم الموارد البشرية</h4>
-            <div class="row">
-                {% with modules=hr_modules|default:None %}
-                {% if modules %}
-                    {% for module in modules %}
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{{ module.url }}" class="text-decoration-none">
-                            <div class="dashboard-card card border-0 shadow-sm">
-                                <div class="card-body">
-                                    <div class="card-icon text-primary"><i class="fas {{ module.icon }}"></i></div>
-                                    <h5 class="card-title">{{ module.name }}</h5>
-                                    <p class="card-subtitle text-muted">{{ module.description|default:"وصف الوحدة" }}</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{% url 'hr:hr_dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-primary"><i class="fas fa-home"></i></div><h5 class="card-title">الصفحة الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية للموارد البشرية</p></div></div></a>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{% url 'employees:index' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-primary"><i class="fas fa-id-card"></i></div><h5 class="card-title">سجل الموظفين</h5><p class="card-subtitle text-muted">عرض وتعديل بيانات الموظفين</p></div></div></a>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{% url 'attendance:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-primary"><i class="fas fa-clock"></i></div><h5 class="card-title">نظام الحضور والانصراف</h5><p class="card-subtitle text-muted">إدارة الحضور والانصراف</p></div></div></a>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{% url 'hr:leaves:leave_dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-success"><i class="fas fa-calendar-alt"></i></div><h5 class="card-title">نظام الإجازات</h5><p class="card-subtitle text-muted">إدارة إجازات الموظفين</p></div></div></a>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{% url 'insurance:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-info"><i class="fas fa-shield-alt"></i></div><h5 class="card-title">نظام التأمين</h5><p class="card-subtitle text-muted">إدارة تأمين الموظفين</p></div></div></a>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{% url 'evaluations:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-warning"><i class="fas fa-star"></i></div><h5 class="card-title">تقييم الأداء</h5><p class="card-subtitle text-muted">تقييم أداء الموظفين</p></div></div></a>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{% url 'training:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-purple" style="color:#8b5cf6"><i class="fas fa-graduation-cap"></i></div><h5 class="card-title">نظام التدريب</h5><p class="card-subtitle text-muted">برامج التدريب والتطوير</p></div></div></a>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{% url 'loans:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-hand-holding-usd"></i></div><h5 class="card-title">نظام القروض</h5><p class="card-subtitle text-muted">إدارة قروض الموظفين</p></div></div></a>
-                    </div>
-                    <div class="col-md-6 col-lg-4">
-                        <a href="{% url 'reporting:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-secondary"><i class="fas fa-chart-bar"></i></div><h5 class="card-title">تقارير الموارد البشرية</h5><p class="card-subtitle text-muted">تقارير شاملة وتحليلات</p></div></div></a>
-                    </div>
-                {% endif %}
-                {% endwith %}
-            </div>
-        </div>
-
-        <!-- ===== Cars Department ===== -->
-        <div class="dept-cards-container" id="cars-cards">
-            <h4 class="mb-3"><i class="fas fa-car ms-2" style="color:#4CAF50"></i>حساب سيارات نقل الموظفين</h4>
-            <div class="row">
-                <div class="col-md-6 col-lg-4">
-                    <a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#4CAF50"><i class="fas fa-home"></i></div><h5 class="card-title">الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية لتطبيق السيارات</p></div></div></a>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#4CAF50"><i class="fas fa-car"></i></div><h5 class="card-title">قائمة السيارات</h5><p class="card-subtitle text-muted">عرض وإدارة السيارات</p></div></div></a>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#4CAF50"><i class="fas fa-building"></i></div><h5 class="card-title">الموردين</h5><p class="card-subtitle text-muted">إدارة موردي السيارات</p></div></div></a>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#4CAF50"><i class="fas fa-route"></i></div><h5 class="card-title">الرحلات</h5><p class="card-subtitle text-muted">إدارة رحلات السيارات</p></div></div></a>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== Warehouse Department ===== -->
-        <div class="dept-cards-container" id="warehouse-cards">
-            <h4 class="mb-3"><i class="fas fa-warehouse ms-2 text-warning"></i>قسم المخزن</h4>
-            <div class="row">
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-warning"><i class="fas fa-home"></i></div><h5 class="card-title">الصفحة الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية للمخزن</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-warning"><i class="fas fa-box"></i></div><h5 class="card-title">قطع الغيار</h5><p class="card-subtitle text-muted">إدارة مخزون قطع الغيار</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-warning"><i class="fas fa-file-invoice"></i></div><h5 class="card-title">الفواتير</h5><p class="card-subtitle text-muted">إدارة فواتير المخزن</p></div></div></a></div>
-            </div>
-        </div>
-
-        <!-- ===== Meetings Department ===== -->
-        <div class="dept-cards-container" id="meetings-cards">
-            <h4 class="mb-3"><i class="fas fa-calendar ms-2" style="color:#6f42c1"></i>قسم الاجتماعات</h4>
-            <div class="row">
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#6f42c1"><i class="fas fa-home"></i></div><h5 class="card-title">الصفحة الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية للاجتماعات</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#6f42c1"><i class="fas fa-calendar-alt"></i></div><h5 class="card-title">قائمة الاجتماعات</h5><p class="card-subtitle text-muted">عرض جميع الاجتماعات</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#6f42c1"><i class="fas fa-plus"></i></div><h5 class="card-title">إنشاء اجتماع</h5><p class="card-subtitle text-muted">إضافة اجتماع جديد</p></div></div></a></div>
-            </div>
-        </div>
-
-        <!-- ===== Tasks Department ===== -->
-        <div class="dept-cards-container" id="tasks-cards">
-            <h4 class="mb-3"><i class="fas fa-tasks ms-2" style="color:#20c997"></i>قسم المهام</h4>
-            <div class="row">
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#20c997"><i class="fas fa-home"></i></div><h5 class="card-title">الصفحة الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية للمهام</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#20c997"><i class="fas fa-tasks"></i></div><h5 class="card-title">قائمة المهام</h5><p class="card-subtitle text-muted">عرض جميع المهام</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#20c997"><i class="fas fa-plus"></i></div><h5 class="card-title">إنشاء مهمة</h5><p class="card-subtitle text-muted">إضافة مهمة جديدة</p></div></div></a></div>
-            </div>
-        </div>
-
-        <!-- ===== Purchase Orders Department ===== -->
-        <div class="dept-cards-container" id="purchase-cards">
-            <h4 class="mb-3"><i class="fas fa-shopping-cart ms-2" style="color:#fd7e14"></i>قسم طلبات الشراء</h4>
-            <div class="row">
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#fd7e14"><i class="fas fa-home"></i></div><h5 class="card-title">الصفحة الرئيسية</h5><p class="card-subtitle text-muted">الصفحة الرئيسية لطلبات الشراء</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#fd7e14"><i class="fas fa-shopping-cart"></i></div><h5 class="card-title">طلبات الشراء</h5><p class="card-subtitle text-muted">عرض جميع طلبات الشراء</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="#" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon" style="color:#fd7e14"><i class="fas fa-plus"></i></div><h5 class="card-title">إنشاء طلب شراء</h5><p class="card-subtitle text-muted">إضافة طلب شراء جديد</p></div></div></a></div>
-            </div>
-        </div>
-
-        <!-- ===== Dynamic Department Modules ===== -->
-        {% for dept_url_name, modules in department_modules.items %}
-        <div class="dept-cards-container" id="{{ dept_url_name }}-cards">
-            {% for dept in user_departments %}
-                {% if dept.url_name == dept_url_name or dept.name.lower|slugify == dept_url_name %}
-            <h4 class="mb-3">{{ dept.name }}</h4>
-                {% endif %}
-            {% empty %}
-            <h4 class="mb-3">الوحدات</h4>
-            {% endfor %}
-            <div class="row">
-                {% for module in modules %}
-                <div class="col-md-6 col-lg-4">
-                    <a href="{{ module.url }}" class="text-decoration-none">
-                        <div class="dashboard-card card border-0 shadow-sm">
-                            <div class="card-body">
-                                <div class="card-icon" style="color:{{ module.bg_color|default:'#2563eb' }}">
-                                    <i class="fas {{ module.icon|default:'fa-puzzle-piece' }}"></i>
-                                </div>
-                                <h5 class="card-title">{{ module.name }}</h5>
-                                <p class="card-subtitle text-muted">{{ module.description|default:"وصف الوحدة" }}</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                {% empty %}
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <i class="fas fa-cubes fa-3x mb-3 text-muted"></i>
-                        <h5 class="text-muted">لا توجد وحدات</h5>
-                        <p class="text-muted">لا توجد وحدات متاحة في هذا القسم حالياً.</p>
-                    </div>
-                </div>
-                {% endfor %}
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-cubes fa-3x mb-3 text-muted"></i>
+                <h5 class="text-muted">لا توجد وحدات</h5>
+                <p class="text-muted">لا توجد وحدات متاحة في هذا القسم حالياً.</p>
             </div>
         </div>
         {% endfor %}
+    </div>
+</div>
+{% endfor %}
 
-        <!-- ===== Notifications Department ===== -->
-        <div class="dept-cards-container" id="notifications-cards">
-            <h4 class="mb-3"><i class="fas fa-bell ms-2 text-danger"></i>قسم التنبيهات</h4>
-            <div class="row">
-                <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-bell"></i></div><h5 class="card-title">لوحة التنبيهات</h5><p class="card-subtitle text-muted">عرض جميع التنبيهات</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:list' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-list"></i></div><h5 class="card-title">قائمة التنبيهات</h5><p class="card-subtitle text-muted">عرض جميع التنبيهات</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:user_notifications' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-user-check"></i></div><h5 class="card-title">تنبيهاتي</h5><p class="card-subtitle text-muted">عرض تنبيهاتي الشخصية</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:list_by_type' 'hr' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-user-tie"></i></div><h5 class="card-title">تنبيهات الموارد البشرية</h5><p class="card-subtitle text-muted">عرض تنبيهات الموارد البشرية</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:list_by_type' 'meetings' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-users"></i></div><h5 class="card-title">تنبيهات الاجتماعات</h5><p class="card-subtitle text-muted">عرض تنبيهات الاجتماعات</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:list_by_type' 'inventory' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-boxes"></i></div><h5 class="card-title">تنبيهات المخزن</h5><p class="card-subtitle text-muted">عرض تنبيهات المخزن</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:mark_all_as_read' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-check-double"></i></div><h5 class="card-title">تعليم الكل كمقروء</h5><p class="card-subtitle text-muted">تعليم جميع التنبيهات كمقروءة</p></div></div></a></div>
-            </div>
-        </div>
+<!-- ===== Notifications Department ===== -->
+<div class="dept-cards-container" id="notifications-cards">
+    <h4 class="mb-3"><i class="fas fa-bell ms-2 text-danger"></i>قسم التنبيهات</h4>
+    <div class="row">
+        <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-bell"></i></div><h5 class="card-title">لوحة التنبيهات</h5><p class="card-subtitle text-muted">عرض جميع التنبيهات</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:list' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-list"></i></div><h5 class="card-title">قائمة التنبيهات</h5><p class="card-subtitle text-muted">عرض جميع التنبيهات</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:user_notifications' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-user-check"></i></div><h5 class="card-title">تنبيهاتي</h5><p class="card-subtitle text-muted">عرض تنبيهاتي الشخصية</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:list_by_type' 'hr' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-user-tie"></i></div><h5 class="card-title">تنبيهات الموارد البشرية</h5><p class="card-subtitle text-muted">عرض تنبيهات الموارد البشرية</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:list_by_type' 'meetings' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-users"></i></div><h5 class="card-title">تنبيهات الاجتماعات</h5><p class="card-subtitle text-muted">عرض تنبيهات الاجتماعات</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:list_by_type' 'inventory' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-boxes"></i></div><h5 class="card-title">تنبيهات المخزن</h5><p class="card-subtitle text-muted">عرض تنبيهات المخزن</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="{% url 'notifications:mark_all_as_read' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-danger"><i class="fas fa-check-double"></i></div><h5 class="card-title">تعليم الكل كمقروء</h5><p class="card-subtitle text-muted">تعليم جميع التنبيهات كمقروءة</p></div></div></a></div>
+    </div>
+</div>
 
-        <!-- ===== System Admin Department ===== -->
-        <div class="dept-cards-container" id="sysadmin-cards"{% if not request.user.is_superuser %} style="display:none!important"{% endif %}>
-            <h4 class="mb-3"><i class="fas fa-cogs ms-2 text-secondary"></i>إدارة النظام</h4>
-            <h5 class="fw-semibold text-muted border-bottom pb-2 mb-3">إعدادات النظام</h5>
-            <div class="row">
-                <div class="col-md-6 col-lg-4"><a href="{% url 'administrator:admin_dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-secondary"><i class="fas fa-cogs"></i></div><h5 class="card-title">لوحة تحكم المدير</h5><p class="card-subtitle text-muted">إعدادات النظام والتخصيص</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="{% url 'administrator:department_list' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-secondary"><i class="fas fa-building"></i></div><h5 class="card-title">إدارة الأقسام</h5><p class="card-subtitle text-muted">تخصيص أقسام النظام</p></div></div></a></div>
-                <div class="col-md-6 col-lg-4"><a href="{% url 'administrator:settings' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-secondary"><i class="fas fa-sliders-h"></i></div><h5 class="card-title">إعدادات النظام</h5><p class="card-subtitle text-muted">ضبط إعدادات التطبيق</p></div></div></a></div>
-            </div>
-            <h5 class="fw-semibold text-muted border-bottom pb-2 mb-3 mt-3">إدارة الصلاحيات</h5>
-            <div class="row">
-                <div class="col-md-6 col-lg-4"><a href="{% url 'administrator:permission_dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-secondary"><i class="fas fa-user-shield"></i></div><h5 class="card-title">نظام الصلاحيات</h5><p class="card-subtitle text-muted">إدارة صلاحيات المستخدمين والمجموعات</p></div></div></a></div>
-            </div>
-        </div>
+<!-- ===== System Admin Department ===== -->
+<div class="dept-cards-container" id="sysadmin-cards"{% if not request.user.is_superuser %} style="display:none!important"{% endif %}>
+    <h4 class="mb-3"><i class="fas fa-cogs ms-2 text-secondary"></i>إدارة النظام</h4>
+    <h5 class="fw-semibold text-muted border-bottom pb-2 mb-3">إعدادات النظام</h5>
+    <div class="row">
+        <div class="col-md-6 col-lg-4"><a href="{% url 'administrator:admin_dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-secondary"><i class="fas fa-cogs"></i></div><h5 class="card-title">لوحة تحكم المدير</h5><p class="card-subtitle text-muted">إعدادات النظام والتخصيص</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="{% url 'administrator:department_list' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-secondary"><i class="fas fa-building"></i></div><h5 class="card-title">إدارة الأقسام</h5><p class="card-subtitle text-muted">تخصيص أقسام النظام</p></div></div></a></div>
+        <div class="col-md-6 col-lg-4"><a href="{% url 'administrator:settings' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-secondary"><i class="fas fa-sliders-h"></i></div><h5 class="card-title">إعدادات النظام</h5><p class="card-subtitle text-muted">ضبط إعدادات التطبيق</p></div></div></a></div>
+    </div>
+    <h5 class="fw-semibold text-muted border-bottom pb-2 mb-3 mt-3">إدارة الصلاحيات</h5>
+    <div class="row">
+        <div class="col-md-6 col-lg-4"><a href="{% url 'administrator:permission_dashboard' %}" class="text-decoration-none"><div class="dashboard-card card border-0 shadow-sm"><div class="card-body"><div class="card-icon text-secondary"><i class="fas fa-user-shield"></i></div><h5 class="card-title">نظام الصلاحيات</h5><p class="card-subtitle text-muted">إدارة صلاحيات المستخدمين والمجموعات</p></div></div></a></div>
     </div>
 </div>
 {% endblock %}
@@ -381,34 +358,10 @@ body.sidebar-collapsed #main-sidebar .nav-section-title { display: none; }
 (function() {
     'use strict';
 
-    const sidebar = document.getElementById('sidebar');
-    const content = document.getElementById('content');
-    const collapseBtn = document.getElementById('sidebarCollapse');
-    const overlay = document.getElementById('sidebarOverlay');
-    const deptItems = document.querySelectorAll('.department-item');
+    const pills = document.querySelectorAll('.dept-pill');
     const containers = document.querySelectorAll('.dept-cards-container');
     const welcome = document.getElementById('welcome-section');
     const aiChat = document.getElementById('aiChatSection');
-
-    function toggleSidebar() {
-        document.body.classList.toggle('sidebar-collapsed');
-        if (window.innerWidth < 992) {
-            sidebar.classList.toggle('show');
-            overlay.classList.toggle('show');
-            content.style.marginRight = sidebar.classList.contains('show') ? '280px' : '0';
-        } else {
-            content.style.marginRight = document.body.classList.contains('sidebar-collapsed') ? '80px' : '280px';
-        }
-        localStorage.setItem('sidebarState', document.body.classList.contains('sidebar-collapsed') ? 'collapsed' : 'expanded');
-    }
-
-    function initSidebar() {
-        const saved = localStorage.getItem('sidebarState');
-        if (saved === 'collapsed' && window.innerWidth >= 992) {
-            document.body.classList.add('sidebar-collapsed');
-            content.style.marginRight = '80px';
-        }
-    }
 
     window.toggleAiChat = function() {
         const show = !aiChat.classList.contains('show');
@@ -417,39 +370,32 @@ body.sidebar-collapsed #main-sidebar .nav-section-title { display: none; }
         if (show) {
             welcome.style.display = 'none';
             containers.forEach(c => c.classList.remove('active'));
-            deptItems.forEach(i => i.classList.remove('active'));
+            pills.forEach(i => i.classList.remove('active'));
         } else {
-            const activeDept = document.querySelector('.department-item.active');
-            if (!activeDept) welcome.style.display = '';
+            const activePill = document.querySelector('.dept-pill.active');
+            if (!activePill || activePill.dataset.dept === 'all') welcome.style.display = '';
         }
     };
 
-    if (collapseBtn) collapseBtn.addEventListener('click', toggleSidebar);
-    if (overlay) overlay.addEventListener('click', toggleSidebar);
-
-    initSidebar();
-
-    window.addEventListener('resize', function() {
-        if (window.innerWidth < 992) {
-            sidebar.classList.remove('show');
-            overlay.classList.remove('show');
-            content.style.marginRight = '0';
-        } else {
-            content.style.marginRight = document.body.classList.contains('sidebar-collapsed') ? '80px' : '280px';
-        }
-    });
-
-    deptItems.forEach(function(item) {
-        item.addEventListener('click', function() {
-            deptItems.forEach(i => { i.classList.remove('active'); i.style.background = ''; });
+    pills.forEach(function(pill) {
+        pill.addEventListener('click', function() {
+            pills.forEach(p => p.classList.remove('active'));
             this.classList.add('active');
-            this.style.background = 'rgba(37,99,235,0.3)';
+
+            const dept = this.getAttribute('data-dept');
+
+            if (dept === 'all') {
+                welcome.style.display = '';
+                aiChat.classList.remove('show');
+                containers.forEach(c => c.classList.remove('active'));
+                document.getElementById('hr-cards')?.classList.add('active');
+                return;
+            }
 
             welcome.style.display = 'none';
             aiChat.classList.remove('show');
             containers.forEach(c => c.classList.remove('active'));
 
-            var deptId = this.getAttribute('data-dept');
             var mapping = {
                 'hr':'hr-cards','warehouse':'warehouse-cards','meetings':'meetings-cards',
                 'tasks':'tasks-cards','purchase':'purchase-cards','purchase_orders':'purchase-cards',
@@ -457,7 +403,7 @@ body.sidebar-collapsed #main-sidebar .nav-section-title { display: none; }
                 'notifications':'notifications-cards','employee_tasks':'employee_tasks-cards','cars':'cars-cards'
             };
 
-            var containerId = mapping[deptId] || deptId + '-cards';
+            var containerId = mapping[dept] || dept + '-cards';
             var target = document.getElementById(containerId);
 
             if (target) {
@@ -470,24 +416,14 @@ body.sidebar-collapsed #main-sidebar .nav-section-title { display: none; }
                 html += '<p class="mb-0 opacity-75">هذا القسم قيد التطوير حاليًا. سيتم إضافة الميزات قريبًا.</p></div>';
                 document.getElementById('welcome-section').innerHTML = html;
             }
-
-            if (window.innerWidth < 992 && !sidebar.classList.contains('show')) toggleSidebar();
-        });
-
-        item.addEventListener('mouseenter', function() {
-            if (!this.classList.contains('active')) this.style.background = 'rgba(255,255,255,0.08)';
-        });
-        item.addEventListener('mouseleave', function() {
-            if (!this.classList.contains('active')) this.style.background = '';
         });
     });
 
     // Auto-show AI chat
     setTimeout(function() {
-        var activeDept = document.querySelector('.department-item.active');
-        if (!activeDept && aiChat) {
+        const activePill = document.querySelector('.dept-pill.active');
+        if ((!activePill || activePill.dataset.dept === 'all') && aiChat) {
             aiChat.classList.add('show');
-            document.getElementById('aiChatToggleBtn').className = 'btn btn-info btn-sm';
         }
     }, 100);
 })();
