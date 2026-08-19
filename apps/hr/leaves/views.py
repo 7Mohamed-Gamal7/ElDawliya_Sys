@@ -76,6 +76,11 @@ def leave_list(request):
             Q(reason__icontains=search)
         )
 
+    # فلترة حسب الموظف
+    employee = request.GET.get('employee')
+    if employee:
+        leaves = leaves.filter(emp_id=employee)
+
     # فلترة حسب نوع الإجازة
     leave_type = request.GET.get('leave_type')
     if leave_type:
@@ -102,12 +107,14 @@ def leave_list(request):
     page_number = request.GET.get('page')
     leaves = paginator.get_page(page_number)
 
-    # قوائم للفلترة
+    # قوائم التصفية. نحافظ على ترتيب واضح وقابل للتنبؤ في الواجهة.
     leave_types = LeaveType.objects.all().order_by('leave_name')
+    employees = Employee.objects.filter(emp_status='Active').order_by('first_name', 'last_name')
 
     context = {
         'leaves': leaves,
         'leave_types': leave_types,
+        'employees': employees,
     }
 
     return render(request, 'leaves/leave_list.html', context)

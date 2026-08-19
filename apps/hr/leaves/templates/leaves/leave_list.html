@@ -4,455 +4,190 @@
 {% block title %}طلبات الإجازات{% endblock %}
 
 {% block breadcrumb_items %}
-<li class="breadcrumb-item active">طلبات الإجازات</li>
+<li class="breadcrumb-item active" aria-current="page">طلبات الإجازات</li>
 {% endblock %}
 
 {% block extra_css %}
-<style>
-    .filter-card {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    .leave-table {
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .status-badge {
-        font-size: 0.85rem;
-        padding: 0.5rem 1rem;
-    }
-    .leave-card {
-        border-radius: 15px;
-        border: none;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        margin-bottom: 15px;
-        transition: transform 0.3s ease;
-    }
-    .leave-card:hover {
-        transform: translateY(-3px);
-    }
-</style>
+<link rel="stylesheet" href="{% static 'leaves/css/leaves.css' %}">
+<link rel="stylesheet" href="{% static 'leaves/css/leave_list.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>
-                <i class="fas fa-list me-2"></i>
-                طلبات الإجازات
-            </h1>
+<section aria-labelledby="leaveRequestsTitle">
+    <header class="leave-page-header">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newLeaveModal">
-                    <i class="fas fa-plus me-1"></i>
-                    طلب إجازة جديد
-                </button>
-                <button class="btn btn-primary" onclick="exportLeaves()">
-                    <i class="fas fa-download me-1"></i>
-                    تصدير
-                </button>
+                <h1 id="leaveRequestsTitle"><i class="fas fa-calendar-days me-2" aria-hidden="true"></i>طلبات الإجازات</h1>
+                <p>ابحث عن الطلبات وراجع حالتها واتخذ الإجراءات المطلوبة.</p>
+            </div>
+            <div class="d-flex flex-column flex-sm-row gap-2">
+                <a href="{% url 'leaves:export_leaves' %}" class="btn btn-outline-light">
+                    <i class="fas fa-file-export me-1" aria-hidden="true"></i>تصدير CSV
+                </a>
+                <a href="{% url 'leaves:create_request' %}" class="btn btn-light text-success fw-bold">
+                    <i class="fas fa-plus me-1" aria-hidden="true"></i>طلب إجازة جديد
+                </a>
             </div>
         </div>
-    </div>
-</div>
+    </header>
 
-<!-- Filters -->
-<div class="row">
-    <div class="col-12">
-        <div class="filter-card">
-            <form method="get" class="row g-3">
-                <div class="col-md-3">
-                    <label for="employee" class="form-label">الموظف</label>
-                    <select class="form-select" name="employee" id="employee">
-                        <option value="">جميع الموظفين</option>
-                        {% for emp in employees %}
-                        <option value="{{ emp.emp_id }}" {% if request.GET.employee == emp.emp_id|stringformat:"s" %}selected{% endif %}>
-                            {{ emp.full_name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="leave_type" class="form-label">نوع الإجازة</label>
-                    <select class="form-select" name="leave_type" id="leave_type">
-                        <option value="">جميع الأنواع</option>
-                        {% for leave_type in leave_types %}
-                        <option value="{{ leave_type.leave_type_id }}" {% if request.GET.leave_type == leave_type.leave_type_id|stringformat:"s" %}selected{% endif %}>
-                            {{ leave_type.leave_name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="status" class="form-label">الحالة</label>
-                    <select class="form-select" name="status" id="status">
-                        <option value="">جميع الحالات</option>
-                        <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>معلق</option>
-                        <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>موافق عليه</option>
-                        <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>مرفوض</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="date_from" class="form-label">من تاريخ</label>
-                    <input type="date" class="form-control" name="date_from" id="date_from" value="{{ request.GET.date_from }}">
-                </div>
-                <div class="col-md-2">
-                    <label for="date_to" class="form-label">إلى تاريخ</label>
-                    <input type="date" class="form-control" name="date_to" id="date_to" value="{{ request.GET.date_to }}">
-                </div>
-                <div class="col-md-1">
-                    <label class="form-label">&nbsp;</label>
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i>
-                        </button>
-                        <a href="{% url 'leaves:leave_list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times"></i>
-                        </a>
-                    </div>
-                </div>
-            </form>
+    <div class="leave-filter-card">
+        <form method="get" class="row g-3" aria-label="تصفية طلبات الإجازات">
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="search" class="form-label">بحث</label>
+                <input type="search" class="form-control" id="search" name="search" value="{{ request.GET.search }}" placeholder="الاسم، الكود، أو سبب الإجازة">
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="employee" class="form-label">الموظف</label>
+                <select class="form-select" id="employee" name="employee">
+                    <option value="">جميع الموظفين</option>
+                    {% for employee in employees %}
+                    <option value="{{ employee.emp_id }}" {% if request.GET.employee == employee.emp_id|stringformat:"s" %}selected{% endif %}>
+                        {{ employee.full_name|default:employee.emp_code }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
+                <label for="leave_type" class="form-label">نوع الإجازة</label>
+                <select class="form-select" id="leave_type" name="leave_type">
+                    <option value="">جميع الأنواع</option>
+                    {% for leave_type in leave_types %}
+                    <option value="{{ leave_type.leave_type_id }}" {% if request.GET.leave_type == leave_type.leave_type_id|stringformat:"s" %}selected{% endif %}>
+                        {{ leave_type.leave_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
+                <label for="status" class="form-label">الحالة</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">جميع الحالات</option>
+                    <option value="Pending" {% if request.GET.status == 'Pending' %}selected{% endif %}>قيد الانتظار</option>
+                    <option value="Approved" {% if request.GET.status == 'Approved' %}selected{% endif %}>معتمدة</option>
+                    <option value="Rejected" {% if request.GET.status == 'Rejected' %}selected{% endif %}>مرفوضة</option>
+                    <option value="Cancelled" {% if request.GET.status == 'Cancelled' %}selected{% endif %}>ملغاة</option>
+                </select>
+            </div>
+            <div class="col-6 col-lg-1">
+                <label for="date_from" class="form-label">من</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request.GET.date_from }}">
+            </div>
+            <div class="col-6 col-lg-1">
+                <label for="date_to" class="form-label">إلى</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request.GET.date_to }}">
+            </div>
+            <div class="col-12 d-flex justify-content-end gap-2">
+                <a href="{% url 'leaves:leave_list' %}" class="btn btn-outline-secondary">إعادة التعيين</a>
+                <button type="submit" class="btn btn-success"><i class="fas fa-filter me-1" aria-hidden="true"></i>تطبيق التصفية</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="leave-table-card">
+        <div class="leave-table-toolbar">
+            <h2>نتائج طلبات الإجازات</h2>
+            <span class="text-muted small">{{ leaves.paginator.count }} طلب إجمالاً</span>
         </div>
-    </div>
-</div>
 
-<!-- Leave Requests -->
-<div class="row">
-    <div class="col-12">
-        <div class="leave-table">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>الموظف</th>
-                            <th>نوع الإجازة</th>
-                            <th>تاريخ البداية</th>
-                            <th>تاريخ النهاية</th>
-                            <th>عدد الأيام</th>
-                            <th>السبب</th>
-                            <th>الحالة</th>
-                            <th>تاريخ الطلب</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for leave in leaves %}
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-sm bg-success rounded-circle d-flex align-items-center justify-content-center me-2">
-                                        <i class="fas fa-user text-white"></i>
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold">{{ leave.emp.full_name }}</div>
-                                        <small class="text-muted">{{ leave.emp.emp_code }}</small>
-                                    </div>
+        <div class="table-responsive" tabindex="0" aria-label="جدول طلبات الإجازات">
+            <table class="table leave-table">
+                <thead>
+                    <tr>
+                        <th scope="col">الموظف</th>
+                        <th scope="col">نوع الإجازة</th>
+                        <th scope="col">الفترة</th>
+                        <th scope="col">المدة</th>
+                        <th scope="col">الحالة</th>
+                        <th scope="col">تاريخ الطلب</th>
+                        <th scope="col" class="text-center">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in leaves %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="leave-avatar" aria-hidden="true"><i class="fas fa-user"></i></span>
+                                <div>
+                                    <div class="fw-bold">{{ leave.emp.full_name|default:leave.emp.emp_code }}</div>
+                                    <small class="text-muted"><bdi dir="ltr">{{ leave.emp.emp_code }}</bdi></small>
                                 </div>
-                            </td>
-                            <td>
-                                <span class="badge bg-primary">{{ leave.leave_type.leave_name }}</span>
-                                {% if leave.leave_type.is_paid %}
-                                    <small class="text-success d-block">مدفوعة</small>
-                                {% else %}
-                                    <small class="text-muted d-block">غير مدفوعة</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="fw-bold">{{ leave.start_date|date:"Y/m/d" }}</span><br>
-                                <small class="text-muted">{{ leave.start_date|date:"l" }}</small>
-                            </td>
-                            <td>
-                                <span class="fw-bold">{{ leave.end_date|date:"Y/m/d" }}</span><br>
-                                <small class="text-muted">{{ leave.end_date|date:"l" }}</small>
-                            </td>
-                            <td>
-                                <span class="fw-bold text-primary fs-5">{{ leave.days }}</span>
-                                <small class="text-muted d-block">يوم</small>
-                            </td>
-                            <td>
-                                <div class="text-truncate" style="max-width: 200px;" title="{{ leave.reason }}">
-                                    {{ leave.reason|truncatechars:50 }}
-                                </div>
-                            </td>
-                            <td>
-                                {% if leave.status == 'pending' %}
-                                    <span class="badge bg-warning status-badge">معلق</span>
-                                {% elif leave.status == 'approved' %}
-                                    <span class="badge bg-success status-badge">موافق عليه</span>
-                                    {% if leave.approved_by %}
-                                        <small class="text-muted d-block">{{ leave.approved_date|date:"Y/m/d" }}</small>
-                                    {% endif %}
-                                {% elif leave.status == 'rejected' %}
-                                    <span class="badge bg-danger status-badge">مرفوض</span>
-                                {% else %}
-                                    <span class="badge bg-secondary status-badge">{{ leave.status }}</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="fw-bold">{{ leave.created_date|date:"Y/m/d" }}</span><br>
-                                <small class="text-muted">{{ leave.created_date|time:"H:i" }}</small>
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-info" onclick="viewLeave({{ leave.leave_id }})" title="عرض">
-                                        <i class="fas fa-eye"></i>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge text-bg-light border">{{ leave.leave_type.leave_name }}</span>
+                            <small class="d-block text-muted mt-1">{% if leave.leave_type.is_paid %}مدفوعة{% else %}غير مدفوعة{% endif %}</small>
+                        </td>
+                        <td>
+                            <div class="fw-semibold">{{ leave.start_date|date:"Y/m/d" }}</div>
+                            <small class="text-muted">إلى {{ leave.end_date|date:"Y/m/d" }}</small>
+                        </td>
+                        <td><span class="fw-bold text-success">{{ leave.duration_days }}</span> يوم</td>
+                        <td>
+                            {% if leave.status == 'Pending' %}
+                            <span class="leave-status leave-status--pending"><i class="fas fa-clock" aria-hidden="true"></i>{{ leave.get_status_display }}</span>
+                            {% elif leave.status == 'Approved' %}
+                            <span class="leave-status leave-status--approved"><i class="fas fa-circle-check" aria-hidden="true"></i>{{ leave.get_status_display }}</span>
+                            {% elif leave.status == 'Rejected' %}
+                            <span class="leave-status leave-status--rejected"><i class="fas fa-circle-xmark" aria-hidden="true"></i>{{ leave.get_status_display }}</span>
+                            {% else %}
+                            <span class="leave-status leave-status--cancelled">{{ leave.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td><time datetime="{{ leave.created_at|date:'c' }}">{{ leave.created_at|date:"Y/m/d" }}</time></td>
+                        <td>
+                            <div class="leave-action-list">
+                                <a href="{% url 'leaves:leave_detail' leave.leave_id %}" class="btn btn-sm btn-outline-primary" aria-label="عرض تفاصيل طلب الإجازة" title="عرض التفاصيل">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                </a>
+                                <a href="{% url 'leaves:edit_leave' leave.leave_id %}" class="btn btn-sm btn-outline-secondary" aria-label="تعديل طلب الإجازة" title="تعديل">
+                                    <i class="fas fa-pen" aria-hidden="true"></i>
+                                </a>
+                                {% if leave.status == 'Pending' %}
+                                <form method="post" action="{% url 'leaves:approve_leave' leave.leave_id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-success" aria-label="اعتماد طلب الإجازة" title="اعتماد">
+                                        <i class="fas fa-check" aria-hidden="true"></i>
                                     </button>
-                                    {% if leave.status == 'pending' %}
-                                        <button class="btn btn-outline-success" onclick="approveLeave({{ leave.leave_id }})" title="موافقة">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        <button class="btn btn-outline-danger" onclick="rejectLeave({{ leave.leave_id }})" title="رفض">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    {% endif %}
-                                    <button class="btn btn-outline-primary" onclick="editLeave({{ leave.leave_id }})" title="تعديل">
-                                        <i class="fas fa-edit"></i>
+                                </form>
+                                <form method="post" action="{% url 'leaves:reject_leave' leave.leave_id %}" class="d-inline" onsubmit="return confirm('هل تريد رفض طلب الإجازة هذا؟');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="رفض طلب الإجازة" title="رفض">
+                                        <i class="fas fa-xmark" aria-hidden="true"></i>
                                     </button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="9" class="text-center py-5">
-                                <i class="fas fa-inbox fa-3x text-muted mb-3 d-block"></i>
-                                <h5 class="text-muted">لا توجد طلبات إجازات</h5>
-                                <p class="text-muted">لم يتم العثور على طلبات إجازات تطابق معايير البحث</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Pagination -->
-            {% if is_paginated %}
-            <div class="card-footer">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center mb-0">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page=1{% if request.GET.employee %}&employee={{ request.GET.employee }}{% endif %}{% if request.GET.leave_type %}&leave_type={{ request.GET.leave_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">
-                                    الأولى
-                                </a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.employee %}&employee={{ request.GET.employee }}{% endif %}{% if request.GET.leave_type %}&leave_type={{ request.GET.leave_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">
-                                    السابقة
-                                </a>
-                            </li>
-                        {% endif %}
-                        
-                        <li class="page-item active">
-                            <span class="page-link">
-                                صفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}
-                            </span>
-                        </li>
-                        
-                        {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.employee %}&employee={{ request.GET.employee }}{% endif %}{% if request.GET.leave_type %}&leave_type={{ request.GET.leave_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">
-                                    التالية
-                                </a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.employee %}&employee={{ request.GET.employee }}{% endif %}{% if request.GET.leave_type %}&leave_type={{ request.GET.leave_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">
-                                    الأخيرة
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-            {% endif %}
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="leave-empty-state">
+                            <i class="fas fa-calendar-xmark" aria-hidden="true"></i>
+                            <h3>لا توجد طلبات إجازات مطابقة</h3>
+                            <p class="mb-3">غيّر معايير التصفية أو أنشئ طلب إجازة جديداً.</p>
+                            <a href="{% url 'leaves:create_request' %}" class="btn btn-success"><i class="fas fa-plus me-1" aria-hidden="true"></i>طلب إجازة جديد</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+
+        {% if leaves.has_other_pages %}
+        <nav class="leave-pagination" aria-label="ترقيم صفحات طلبات الإجازات">
+            <ul class="pagination pagination-sm justify-content-center mb-0">
+                {% if leaves.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ leaves.previous_page_number }}&search={{ request.GET.search|urlencode }}&employee={{ request.GET.employee|urlencode }}&leave_type={{ request.GET.leave_type|urlencode }}&status={{ request.GET.status|urlencode }}&date_from={{ request.GET.date_from|urlencode }}&date_to={{ request.GET.date_to|urlencode }}">السابق</a></li>
+                {% endif %}
+                <li class="page-item active" aria-current="page"><span class="page-link">{{ leaves.number }} من {{ leaves.paginator.num_pages }}</span></li>
+                {% if leaves.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ leaves.next_page_number }}&search={{ request.GET.search|urlencode }}&employee={{ request.GET.employee|urlencode }}&leave_type={{ request.GET.leave_type|urlencode }}&status={{ request.GET.status|urlencode }}&date_from={{ request.GET.date_from|urlencode }}&date_to={{ request.GET.date_to|urlencode }}">التالي</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
     </div>
-</div>
-
-<!-- New Leave Request Modal -->
-<div class="modal fade" id="newLeaveModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">طلب إجازة جديد</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="newLeaveForm">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="modal_employee" class="form-label">الموظف *</label>
-                                <select class="form-select" name="employee" id="modal_employee" required>
-                                    <option value="">-- اختر الموظف --</option>
-                                    {% for emp in employees %}
-                                    <option value="{{ emp.emp_id }}">{{ emp.full_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="modal_leave_type" class="form-label">نوع الإجازة *</label>
-                                <select class="form-select" name="leave_type" id="modal_leave_type" required>
-                                    <option value="">-- اختر نوع الإجازة --</option>
-                                    {% for leave_type in leave_types %}
-                                    <option value="{{ leave_type.leave_type_id }}">{{ leave_type.leave_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="modal_start_date" class="form-label">تاريخ البداية *</label>
-                                <input type="date" class="form-control" name="start_date" id="modal_start_date" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="modal_end_date" class="form-label">تاريخ النهاية *</label>
-                                <input type="date" class="form-control" name="end_date" id="modal_end_date" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="modal_reason" class="form-label">سبب الإجازة *</label>
-                        <textarea class="form-control" name="reason" id="modal_reason" rows="3" required></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                <button type="button" class="btn btn-success" onclick="submitLeaveRequest()">تقديم الطلب</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Leave Details Modal -->
-<div class="modal fade" id="leaveDetailsModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">تفاصيل طلب الإجازة</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="leaveDetailsContent">
-                <!-- Content will be loaded dynamically -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-function submitLeaveRequest() {
-    const form = document.getElementById('newLeaveForm');
-    const formData = new FormData(form);
-    
-    fetch('{% url "leaves:create_request" %}', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            alert('حدث خطأ: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('حدث خطأ في الاتصال');
-    });
-}
-
-function viewLeave(leaveId) {
-    fetch(`{% url "leaves:leave_detail" 0 %}`.replace('0', leaveId))
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('leaveDetailsContent').innerHTML = html;
-        const modal = new bootstrap.Modal(document.getElementById('leaveDetailsModal'));
-        modal.show();
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('حدث خطأ في جلب التفاصيل');
-    });
-}
-
-function approveLeave(leaveId) {
-    if (confirm('هل أنت متأكد من الموافقة على هذا الطلب؟')) {
-        fetch(`{% url "leaves:approve_leave" 0 %}`.replace('0', leaveId), {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('حدث خطأ: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('حدث خطأ في الاتصال');
-        });
-    }
-}
-
-function rejectLeave(leaveId) {
-    const reason = prompt('سبب الرفض (اختياري):');
-    if (reason !== null) {
-        fetch(`{% url "leaves:reject_leave" 0 %}`.replace('0', leaveId), {
-            method: 'POST',
-            body: JSON.stringify({reason: reason}),
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('حدث خطأ: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('حدث خطأ في الاتصال');
-        });
-    }
-}
-
-function editLeave(leaveId) {
-    // Implement edit functionality
-    alert('سيتم تنفيذ وظيفة التعديل قريباً');
-}
-
-function exportLeaves() {
-    const params = new URLSearchParams(window.location.search);
-    params.set('export', 'excel');
-    window.location.href = '{% url "leaves:leave_list" %}?' + params.toString();
-}
-</script>
+</section>
 {% endblock %}
